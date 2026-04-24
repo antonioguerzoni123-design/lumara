@@ -1,26 +1,42 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* === Cores principais === */
+  --color-lumara-warm-black: #1A1A2E;
+  --color-lumara-offwhite: #FAF8FB;
+  --color-lumara-gray: #6B6B8A;
+  --color-lumara-border: #E8E0F0;
+
+  /* === Família Lilás / Violeta === */
+  --color-lumara-lilac: #B89EF0;
+  --color-lumara-violet: #8B6BE0;
+  --color-lumara-purple-mid: #E0D4F9;
+  --color-lumara-purple-light: #F3EFFE;
+
+  /* === Família Rosa === */
+  --color-lumara-pink: #E0689F;
+  --color-lumara-pink-pastel: #F0A0C5;
+  --color-lumara-pink-mid: #F9D8E8;
+  --color-lumara-pink-light: #FDF0F5;
+
+  /* === Aliases para compatibilidade com classes existentes === */
+  --color-lumara-gold: #E0689F;
+  --color-lumara-gold-muted: #F9D8E8;
+  --color-lumara-accent-dark: #8B6BE0;
+  --color-lumara-accent-soft: #E0D4F9;
+  --color-lumara-accent-softer: #FDF0F5;
+  --color-lumara-nude: #E0D4F9;
+  --color-lumara-nude-light: #F3EFFE;
+  --color-lumara-bg2: #F3EFFE;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+:root {
+  --background: #FAF8FB;
+  --foreground: #1A1A2E;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
