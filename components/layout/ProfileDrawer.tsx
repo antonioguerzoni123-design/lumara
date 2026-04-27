@@ -2,16 +2,17 @@
 
 import { X, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import Link from 'next/link';
 
 type Props = { open: boolean; onClose: () => void };
 
 const links = [
-  { label: 'As minhas encomendas', href: '#' },
-  { label: 'Moradas & envio', href: '#' },
-  { label: 'Métodos de pagamento', href: '#' },
-  { label: 'Favoritos guardados', href: '#' },
-  { label: 'Preferências', href: '#' },
-  { label: 'Apoio ao cliente', href: '#' },
+  { label: 'As minhas encomendas', href: '/conta/encomendas' },
+  { label: 'Moradas & envio', href: '/conta/moradas' },
+  { label: 'Métodos de pagamento', href: '/conta/moradas' },
+  { label: 'Favoritos guardados', href: '/conta/favoritos' },
+  { label: 'Preferências', href: '/conta/preferencias' },
+  { label: 'Apoio ao cliente', href: '/conta/apoio' },
 ];
 
 export default function ProfileDrawer({ open, onClose }: Props) {
@@ -63,14 +64,15 @@ export default function ProfileDrawer({ open, onClose }: Props) {
               <ul className="divide-y divide-lumara-border">
                 {links.map((link) => (
                   <li key={link.label}>
-                    <a
+                    <Link
                       href={link.href}
+                      onClick={onClose}
                       className="flex items-center justify-between py-3.5 text-sm text-lumara-warm-black hover:text-lumara-accent-dark transition-colors"
                       style={{ fontFamily: 'var(--font-dm-sans)' }}
                     >
                       <span>{link.label}</span>
                       <ChevronRight size={14} className="text-lumara-gray" />
-                    </a>
+                    </Link>
                   </li>
                 ))}
               </ul>
@@ -78,9 +80,13 @@ export default function ProfileDrawer({ open, onClose }: Props) {
 
             {/* Footer */}
             <div className="px-7 pb-6 pt-4 border-t border-lumara-border">
-              <button className="flex w-full justify-center bg-transparent text-lumara-warm-black border-[1.5px] border-lumara-warm-black py-3.5 rounded-full text-sm font-bold hover:bg-lumara-warm-black hover:text-lumara-offwhite transition-colors" style={{ fontFamily: 'var(--font-nunito)' }}>
+              <Link
+                href="/api/auth/shopify"
+                className="flex w-full justify-center bg-transparent text-lumara-warm-black border-[1.5px] border-lumara-warm-black py-3.5 rounded-full text-sm font-bold hover:bg-lumara-warm-black hover:text-lumara-offwhite transition-colors"
+                style={{ fontFamily: 'var(--font-nunito)' }}
+              >
                 Iniciar sessão
-              </button>
+              </Link>
             </div>
           </motion.aside>
         </>
