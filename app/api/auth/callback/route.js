@@ -21,8 +21,8 @@ export async function GET(request) {
 
   try {
     const clientId = process.env.SHOPIFY_CUSTOMER_ACCOUNT_API_CLIENT_ID;
-    const apiUrl = process.env.SHOPIFY_CUSTOMER_ACCOUNT_API_URL;
-    const redirectUri = process.env.SHOPIFY_CUSTOMER_ACCOUNT_API_REDIRECT_URI;
+    const apiUrl = process.env.SHOPIFY_CUSTOMER_ACCOUNT_API_URL ?? 'https://shopify.com/103627391313/account';
+    const redirectUri = process.env.SHOPIFY_CUSTOMER_ACCOUNT_API_REDIRECT_URI ?? 'https://lumarabeauty.com/api/auth/callback';
 
     const tokenRes = await fetch(`${apiUrl}/oauth/token`, {
       method: 'POST',
