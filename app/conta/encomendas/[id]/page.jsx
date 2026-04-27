@@ -51,7 +51,7 @@ function fmt(amount, currency) {
 export default async function OrderDetailPage({ params }) {
   const { id } = await params;
   const cookieStore = await cookies();
-  const token = cookieStore.get('shopify_access_token')?.value;
+  const token = cookieStore.get('shopify_customer_token')?.value;
 
   const gid = `gid://shopify/Order/${id}`;
   let order = null;

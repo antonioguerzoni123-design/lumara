@@ -18,7 +18,7 @@ const QUERY = `
 
 export async function GET() {
   const cookieStore = await cookies();
-  const token = cookieStore.get('shopify_access_token')?.value;
+  const token = cookieStore.get('shopify_customer_token')?.value;
 
   if (!token) return Response.json({ error: 'Unauthorized' }, { status: 401 });
 

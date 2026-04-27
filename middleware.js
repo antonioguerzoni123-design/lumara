@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 
 export function middleware(request) {
-  const token = request.cookies.get('shopify_access_token')?.value;
+  const token = request.cookies.get('shopify_customer_token')?.value;
   const expiresAt = request.cookies.get('shopify_token_expires_at')?.value;
   const { pathname } = request.nextUrl;
 

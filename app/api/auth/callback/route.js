@@ -1,5 +1,9 @@
-import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
+
+const SHOP_ID = '103627391313';
+const AUTH_BASE = `https://shopify.com/authentication/${SHOP_ID}`;
+const CLIENT_ID = process.env.SHOPIFY_CUSTOMER_ACCOUNT_API_CLIENT_ID ?? '03907cc8-9618-4ddf-b424-babe73cf9845';
+const REDIRECT_URI = process.env.SHOPIFY_CUSTOMER_ACCOUNT_API_REDIRECT_URI ?? 'https://lumarabeauty.com/api/auth/callback';
 
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
@@ -7,9 +11,8 @@ export async function GET(request) {
   const returnedState = searchParams.get('state');
   const error = searchParams.get('error');
 
-  const cookieStore = await cookies();
-  const storedState = cookieStore.get('oauth_state')?.value;
-  const codeVerifier = cookieStore.get('pkce_verifier')?.value;
+  const storedState = request.cookies.get('oauth_state')?.value;
+  const codeVerifier = request.cookies.get('pkce_verifier')?.value;
 
   if (error || !code) {
     return NextResponse.redirect(new URL('/login?error=access_denied', request.url));
@@ -20,17 +23,13 @@ export async function GET(request) {
   }
 
   try {
-    const clientId = process.env.SHOPIFY_CUSTOMER_ACCOUNT_API_CLIENT_ID;
-    const apiUrl = process.env.SHOPIFY_CUSTOMER_ACCOUNT_API_URL ?? 'https://shopify.com/103627391313/account';
-    const redirectUri = process.env.SHOPIFY_CUSTOMER_ACCOUNT_API_REDIRECT_URI ?? 'https://lumarabeauty.com/api/auth/callback';
-
-    const tokenRes = await fetch(`${apiUrl}/oauth/token`, {
+    const tokenRes = await fetch(`${AUTH_BASE}/oauth/token`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: new URLSearchParams({
         grant_type: 'authorization_code',
-        client_id: clientId,
-        redirect_uri: redirectUri,
+        client_id: CLIENT_ID,
+        redirect_uri: REDIRECT_URI,
         code,
         code_verifier: codeVerifier,
       }),
@@ -38,19 +37,36 @@ export async function GET(request) {
     });
 
     if (!tokenRes.ok) {
+      const body = await tokenRes.text();
+      console.error('Token exchange failed:', tokenRes.status, body);
       throw new Error(`Token exchange failed: ${tokenRes.status}`);
     }
 
     const { access_token, refresh_token, expires_in } = await tokenRes.json();
 
-    const expiresAt = Date.now() + expires_in * 1000;
+    const response = NextResponse.redirect('https://lumarabeauty.com/conta');
 
-    const response = NextResponse.redirect(new URL('/conta', request.url));
-    const secureOpts = { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax', path: '/' };
+    const secureOpts = {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'lax',
+      path: '/',
+    };
 
-    response.cookies.set('shopify_access_token', access_token, { ...secureOpts, maxAge: expires_in });
-    response.cookies.set('shopify_refresh_token', refresh_token, { ...secureOpts, maxAge: 60 * 60 * 24 * 30 });
-    response.cookies.set('shopify_token_expires_at', String(expiresAt), { ...secureOpts, maxAge: expires_in });
+    response.cookies.set('shopify_customer_token', access_token, {
+      ...secureOpts,
+      maxAge: expires_in ?? 3600,
+    });
+    if (refresh_token) {
+      response.cookies.set('shopify_customer_refresh_token', refresh_token, {
+        ...secureOpts,
+        maxAge: 60 * 60 * 24 * 30,
+      });
+    }
+    response.cookies.set('shopify_token_expires_at', String(Date.now() + (expires_in ?? 3600) * 1000), {
+      ...secureOpts,
+      maxAge: expires_in ?? 3600,
+    });
 
     response.cookies.delete('oauth_state');
     response.cookies.delete('pkce_verifier');

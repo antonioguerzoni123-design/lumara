@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 
 export async function POST() {
   const cookieStore = await cookies();
-  const refreshToken = cookieStore.get('shopify_refresh_token')?.value;
+  const refreshToken = cookieStore.get('shopify_customer_refresh_token')?.value;
 
   if (!refreshToken) {
     return Response.json({ error: 'No refresh token' }, { status: 401 });
@@ -30,10 +30,10 @@ export async function POST() {
     const expiresAt = Date.now() + expires_in * 1000;
 
     const secureOpts = { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax', path: '/' };
-    cookieStore.set('shopify_access_token', access_token, { ...secureOpts, maxAge: expires_in });
+    cookieStore.set('shopify_customer_token', access_token, { ...secureOpts, maxAge: expires_in });
     cookieStore.set('shopify_token_expires_at', String(expiresAt), { ...secureOpts, maxAge: expires_in });
     if (newRefresh) {
-      cookieStore.set('shopify_refresh_token', newRefresh, { ...secureOpts, maxAge: 60 * 60 * 24 * 30 });
+      cookieStore.set('shopify_customer_refresh_token', newRefresh, { ...secureOpts, maxAge: 60 * 60 * 24 * 30 });
     }
 
     return Response.json({ ok: true });
