@@ -1,8 +1,7 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useSearchParams, useRouter } from 'next/navigation';
 import { ShoppingBag, Search, Heart, User, Menu, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCartStore } from '@/lib/cart';
@@ -11,20 +10,6 @@ import CartDrawer from './CartDrawer';
 import SearchDrawer from './SearchDrawer';
 import LikesDrawer from './LikesDrawer';
 import ProfileDrawer from './ProfileDrawer';
-
-function ProfileAutoOpen({ onOpen }: { onOpen: () => void }) {
-  const searchParams = useSearchParams();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (searchParams.get('conta') === 'aberta') {
-      onOpen();
-      router.replace('/', { scroll: false });
-    }
-  }, [searchParams, router, onOpen]);
-
-  return null;
-}
 
 const leftLinks: { href: string; label: string; accent?: boolean }[] = [
   { href: '/', label: 'Início' },
@@ -68,16 +53,21 @@ export default function Navbar() {
   const [mounted, setMounted] = useState(false);
   const count = useCartStore((s) => s.count);
   const likesCount = useLikesStore((s) => s.likes.length);
-  useEffect(() => setMounted(true), []);
+  useEffect(() => {
+    setMounted(true);
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('conta') === 'aberta') {
+        setDrawer('profile');
+        window.history.replaceState({}, '', '/');
+      }
+    }
+  }, []);
 
   const close = () => setDrawer(null);
 
   return (
     <>
-      <Suspense fallback={null}>
-        <ProfileAutoOpen onOpen={() => setDrawer('profile')} />
-      </Suspense>
-
       {/* Announcement bar */}
       <div className="bg-lumara-warm-black text-lumara-offwhite text-[12px] tracking-[0.08em] uppercase py-2.5 text-center font-medium" style={{ fontFamily: 'var(--font-dm-sans)' }}>
         ✦ Frete grátis acima de €40 · Entrega em 5-10 dias úteis · 10% off primeira compra: LUMARA10 ✦
