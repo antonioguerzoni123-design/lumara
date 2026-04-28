@@ -3,19 +3,27 @@
 import { X, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
+import { useCustomer } from '@/hooks/useCustomer';
 
 type Props = { open: boolean; onClose: () => void };
 
 const links = [
   { label: 'As minhas encomendas', href: '/conta/encomendas' },
   { label: 'Moradas & envio', href: '/conta/moradas' },
-  { label: 'Métodos de pagamento', href: '/conta/moradas' },
   { label: 'Favoritos guardados', href: '/conta/favoritos' },
   { label: 'Preferências', href: '/conta/preferencias' },
   { label: 'Apoio ao cliente', href: '/conta/apoio' },
 ];
 
 export default function ProfileDrawer({ open, onClose }: Props) {
+  const { customer, isLoggedIn, isLoading } = useCustomer();
+
+  const firstName = customer?.firstName ?? '';
+  const lastName = customer?.lastName ?? '';
+  const name = [firstName, lastName].filter(Boolean).join(' ') || 'Cliente';
+  const email = customer?.emailAddress?.emailAddress ?? '';
+  const initial = isLoggedIn ? name.charAt(0).toUpperCase() : '✦';
+
   return (
     <AnimatePresence>
       {open && (
@@ -52,41 +60,64 @@ export default function ProfileDrawer({ open, onClose }: Props) {
               {/* Profile hero */}
               <div className="flex items-center gap-3.5 pb-5 border-b border-lumara-border mb-5">
                 <div className="w-[52px] h-[52px] rounded-full bg-lumara-accent-soft text-lumara-accent-dark flex items-center justify-center text-lg font-bold" style={{ fontFamily: 'var(--font-nunito)' }}>
-                  L
+                  {initial}
                 </div>
                 <div>
-                  <p className="text-[17px] font-bold text-lumara-warm-black" style={{ fontFamily: 'var(--font-nunito)' }}>Olá, Lumara ✦</p>
-                  <p className="text-sm text-lumara-gray" style={{ fontFamily: 'var(--font-dm-sans)' }}>Inicia sessão para ver as tuas encomendas</p>
+                  {isLoading ? (
+                    <p className="text-[17px] font-bold text-lumara-warm-black" style={{ fontFamily: 'var(--font-nunito)' }}>A carregar…</p>
+                  ) : isLoggedIn ? (
+                    <>
+                      <p className="text-[17px] font-bold text-lumara-warm-black" style={{ fontFamily: 'var(--font-nunito)' }}>Olá, {firstName || name} ✦</p>
+                      {email && <p className="text-sm text-lumara-gray" style={{ fontFamily: 'var(--font-dm-sans)' }}>{email}</p>}
+                    </>
+                  ) : (
+                    <>
+                      <p className="text-[17px] font-bold text-lumara-warm-black" style={{ fontFamily: 'var(--font-nunito)' }}>Bem-vinda à Lumara ✦</p>
+                      <p className="text-sm text-lumara-gray" style={{ fontFamily: 'var(--font-dm-sans)' }}>Inicia sessão para ver as tuas encomendas</p>
+                    </>
+                  )}
                 </div>
               </div>
 
-              {/* Links */}
-              <ul className="divide-y divide-lumara-border">
-                {links.map((link) => (
-                  <li key={link.label}>
-                    <Link
-                      href={link.href}
-                      onClick={onClose}
-                      className="flex items-center justify-between py-3.5 text-sm text-lumara-warm-black hover:text-lumara-accent-dark transition-colors"
-                      style={{ fontFamily: 'var(--font-dm-sans)' }}
-                    >
-                      <span>{link.label}</span>
-                      <ChevronRight size={14} className="text-lumara-gray" />
-                    </Link>
-                  </li>
-                ))}
-              </ul>
+              {/* Links — only when logged in */}
+              {isLoggedIn && (
+                <ul className="divide-y divide-lumara-border">
+                  {links.map((link) => (
+                    <li key={link.label}>
+                      <Link
+                        href={link.href}
+                        onClick={onClose}
+                        className="flex items-center justify-between py-3.5 text-sm text-lumara-warm-black hover:text-lumara-accent-dark transition-colors"
+                        style={{ fontFamily: 'var(--font-dm-sans)' }}
+                      >
+                        <span>{link.label}</span>
+                        <ChevronRight size={14} className="text-lumara-gray" />
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
 
             {/* Footer */}
             <div className="px-7 pb-6 pt-4 border-t border-lumara-border">
-              <Link
-                href="/api/auth/shopify"
-                className="flex w-full justify-center bg-transparent text-lumara-warm-black border-[1.5px] border-lumara-warm-black py-3.5 rounded-full text-sm font-bold hover:bg-lumara-warm-black hover:text-lumara-offwhite transition-colors"
-                style={{ fontFamily: 'var(--font-nunito)' }}
-              >
-                Iniciar sessão
-              </Link>
+              {isLoggedIn ? (
+                <a
+                  href="/api/auth/logout"
+                  className="flex w-full justify-center bg-transparent text-lumara-warm-black border-[1.5px] border-lumara-warm-black py-3.5 rounded-full text-sm font-bold hover:bg-red-50 hover:border-red-400 hover:text-red-600 transition-colors"
+                  style={{ fontFamily: 'var(--font-nunito)' }}
+                >
+                  Terminar sessão
+                </a>
+              ) : (
+                <Link
+                  href="/api/auth/shopify"
+                  className="flex w-full justify-center bg-transparent text-lumara-warm-black border-[1.5px] border-lumara-warm-black py-3.5 rounded-full text-sm font-bold hover:bg-lumara-warm-black hover:text-lumara-offwhite transition-colors"
+                  style={{ fontFamily: 'var(--font-nunito)' }}
+                >
+                  Iniciar sessão
+                </Link>
+              )}
             </div>
           </motion.aside>
         </>

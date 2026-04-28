@@ -3,10 +3,11 @@ import { NextResponse } from 'next/server';
 const SHOP_ID = '103627391313';
 const AUTH_BASE = `https://shopify.com/authentication/${SHOP_ID}`;
 const CLIENT_ID = process.env.SHOPIFY_CUSTOMER_ACCOUNT_API_CLIENT_ID ?? '03907cc8-9618-4ddf-b424-babe73cf9845';
-const REDIRECT_URI = process.env.SHOPIFY_CUSTOMER_ACCOUNT_API_REDIRECT_URI ?? 'https://lumarabeauty.com/api/auth/callback';
 
 export async function GET(request) {
-  const { searchParams } = new URL(request.url);
+  const reqUrl = new URL(request.url);
+  const { searchParams } = reqUrl;
+  const redirectUri = process.env.SHOPIFY_CUSTOMER_ACCOUNT_API_REDIRECT_URI ?? `${reqUrl.origin}/api/auth/callback`;
   const code = searchParams.get('code');
   const returnedState = searchParams.get('state');
   const error = searchParams.get('error');
@@ -29,7 +30,7 @@ export async function GET(request) {
       body: new URLSearchParams({
         grant_type: 'authorization_code',
         client_id: CLIENT_ID,
-        redirect_uri: REDIRECT_URI,
+        redirect_uri: redirectUri,
         code,
         code_verifier: codeVerifier,
       }),
@@ -44,11 +45,12 @@ export async function GET(request) {
 
     const { access_token, refresh_token, expires_in } = await tokenRes.json();
 
-    const response = NextResponse.redirect('https://lumarabeauty.com/conta');
+    const response = NextResponse.redirect(`${reqUrl.origin}/`);
 
+    const isLocalhost = reqUrl.origin.startsWith('http://localhost');
     const secureOpts = {
       httpOnly: true,
-      secure: true,
+      secure: !isLocalhost,
       sameSite: 'lax',
       path: '/',
     };

@@ -3,8 +3,12 @@
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useCustomer } from '@/hooks/useCustomer';
 
 export default function Hero() {
+  const { customer, isLoggedIn } = useCustomer();
+  const firstName = customer?.firstName ?? '';
+
   return (
     <section className="bg-lumara-offwhite py-14 lg:py-[56px]">
       <div className="max-w-[1400px] mx-auto px-6 lg:px-10 grid grid-cols-1 lg:grid-cols-[0.9fr_1.15fr] gap-14 lg:gap-[56px] items-center">
@@ -15,6 +19,21 @@ export default function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, ease: 'easeOut' }}
         >
+          {/* Greeting when logged in */}
+          {isLoggedIn && firstName && (
+            <motion.div
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="inline-flex items-center gap-2 bg-lumara-accent-soft border border-lumara-accent-dark/20 rounded-full px-4 py-1.5 mb-4"
+              style={{ fontFamily: 'var(--font-dm-sans)' }}
+            >
+              <span className="text-[13px] text-lumara-accent-dark font-medium">
+                Olá, <strong className="font-bold">{firstName}</strong> — bem-vinda de volta ✦
+              </span>
+            </motion.div>
+          )}
+
           {/* Eyebrow */}
           <div
             className="flex items-center gap-2.5 text-lumara-accent-dark text-xs tracking-[0.14em] uppercase font-semibold mb-5"
