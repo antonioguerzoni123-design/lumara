@@ -1,6 +1,8 @@
 import { cookies } from 'next/headers';
 import { customerFetch } from '@/lib/shopifyCustomer';
 
+export const dynamic = 'force-dynamic';
+
 const QUERY = `
   query Me {
     customer {

@@ -9,7 +9,7 @@ export function useCustomer() {
 
     async function load() {
       try {
-        const res = await fetch('/api/account/me');
+        const res = await fetch('/api/account/me', { cache: 'no-store' });
         if (!res.ok) throw new Error('not logged in');
         const customer = await res.json();
         if (!cancelled) setState({ customer, isLoading: false, isLoggedIn: true });
