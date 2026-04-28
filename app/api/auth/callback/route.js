@@ -45,7 +45,7 @@ export async function GET(request) {
 
     const { access_token, refresh_token, expires_in } = await tokenRes.json();
 
-    const response = NextResponse.redirect(`${reqUrl.origin}/`);
+    const response = NextResponse.redirect(`${reqUrl.origin}/?conta=aberta`);
 
     const isLocalhost = reqUrl.origin.startsWith('http://localhost');
     const secureOpts = {

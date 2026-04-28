@@ -1,6 +1,6 @@
 'use client';
 
-import { X, ChevronRight } from 'lucide-react';
+import { X, ChevronRight, Lock } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { useCustomer } from '@/hooks/useCustomer';
@@ -79,11 +79,11 @@ export default function ProfileDrawer({ open, onClose }: Props) {
                 </div>
               </div>
 
-              {/* Links — only when logged in */}
-              {isLoggedIn && (
-                <ul className="divide-y divide-lumara-border">
-                  {links.map((link) => (
-                    <li key={link.label}>
+              {/* Links — always visible */}
+              <ul className="divide-y divide-lumara-border">
+                {links.map((link) => (
+                  <li key={link.label}>
+                    {isLoggedIn ? (
                       <Link
                         href={link.href}
                         onClick={onClose}
@@ -93,10 +93,20 @@ export default function ProfileDrawer({ open, onClose }: Props) {
                         <span>{link.label}</span>
                         <ChevronRight size={14} className="text-lumara-gray" />
                       </Link>
-                    </li>
-                  ))}
-                </ul>
-              )}
+                    ) : (
+                      <a
+                        href="/api/auth/shopify"
+                        className="flex items-center justify-between py-3.5 text-sm text-lumara-gray hover:text-lumara-accent-dark transition-colors"
+                        style={{ fontFamily: 'var(--font-dm-sans)' }}
+                        title="Inicia sessão para aceder"
+                      >
+                        <span>{link.label}</span>
+                        <Lock size={13} className="text-lumara-gray/60" />
+                      </a>
+                    )}
+                  </li>
+                ))}
+              </ul>
             </div>
 
             {/* Footer */}
@@ -110,13 +120,13 @@ export default function ProfileDrawer({ open, onClose }: Props) {
                   Terminar sessão
                 </a>
               ) : (
-                <Link
+                <a
                   href="/api/auth/shopify"
                   className="flex w-full justify-center bg-transparent text-lumara-warm-black border-[1.5px] border-lumara-warm-black py-3.5 rounded-full text-sm font-bold hover:bg-lumara-warm-black hover:text-lumara-offwhite transition-colors"
                   style={{ fontFamily: 'var(--font-nunito)' }}
                 >
                   Iniciar sessão
-                </Link>
+                </a>
               )}
             </div>
           </motion.aside>

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { ShoppingBag, Search, Heart, User, Menu, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCartStore } from '@/lib/cart';
@@ -53,8 +54,17 @@ export default function Navbar() {
   const [mounted, setMounted] = useState(false);
   const count = useCartStore((s) => s.count);
   const likesCount = useLikesStore((s) => s.likes.length);
+  const searchParams = useSearchParams();
+  const router = useRouter();
 
   useEffect(() => setMounted(true), []);
+
+  useEffect(() => {
+    if (searchParams.get('conta') === 'aberta') {
+      setDrawer('profile');
+      router.replace('/', { scroll: false });
+    }
+  }, [searchParams, router]);
 
   const close = () => setDrawer(null);
 
