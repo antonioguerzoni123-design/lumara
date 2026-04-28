@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { X, ChevronRight, Lock } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
@@ -17,12 +18,32 @@ const links = [
 
 export default function ProfileDrawer({ open, onClose }: Props) {
   const { customer, isLoggedIn, isLoading } = useCustomer();
+  const [nameInput, setNameInput] = useState('');
+  const [savingName, setSavingName] = useState(false);
+  const [nameSaved, setNameSaved] = useState(false);
 
   const firstName = customer?.firstName ?? '';
   const lastName = customer?.lastName ?? '';
   const name = [firstName, lastName].filter(Boolean).join(' ') || 'Cliente';
   const email = customer?.emailAddress?.emailAddress ?? '';
-  const initial = isLoggedIn ? name.charAt(0).toUpperCase() : '✦';
+  const initial = isLoggedIn ? (firstName || name).charAt(0).toUpperCase() : '✦';
+  const needsName = isLoggedIn && !firstName && !nameSaved;
+
+  async function handleSaveName(e: React.FormEvent) {
+    e.preventDefault();
+    if (!nameInput.trim()) return;
+    setSavingName(true);
+    try {
+      await fetch('/api/account/update', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ firstName: nameInput.trim() }),
+      });
+      setNameSaved(true);
+    } finally {
+      setSavingName(false);
+    }
+  }
 
   return (
     <AnimatePresence>
@@ -67,7 +88,9 @@ export default function ProfileDrawer({ open, onClose }: Props) {
                     <p className="text-[17px] font-bold text-lumara-warm-black" style={{ fontFamily: 'var(--font-nunito)' }}>A carregar…</p>
                   ) : isLoggedIn ? (
                     <>
-                      <p className="text-[17px] font-bold text-lumara-warm-black" style={{ fontFamily: 'var(--font-nunito)' }}>Olá, {firstName || name} ✦</p>
+                      <p className="text-[17px] font-bold text-lumara-warm-black" style={{ fontFamily: 'var(--font-nunito)' }}>
+                        {nameSaved && nameInput ? `Olá, ${nameInput} ✦` : firstName ? `Olá, ${firstName} ✦` : 'Bem-vinda ✦'}
+                      </p>
                       {email && <p className="text-sm text-lumara-gray" style={{ fontFamily: 'var(--font-dm-sans)' }}>{email}</p>}
                     </>
                   ) : (
@@ -78,6 +101,41 @@ export default function ProfileDrawer({ open, onClose }: Props) {
                   )}
                 </div>
               </div>
+
+              {/* Ask for name after first login */}
+              {needsName && (
+                <motion.div
+                  initial={{ opacity: 0, y: -8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="mb-5 bg-lumara-accent-soft border border-lumara-accent-dark/20 rounded-2xl p-5"
+                >
+                  <p className="text-sm font-semibold text-lumara-warm-black mb-1" style={{ fontFamily: 'var(--font-nunito)' }}>
+                    Como te chamamos? ✦
+                  </p>
+                  <p className="text-xs text-lumara-gray mb-3" style={{ fontFamily: 'var(--font-dm-sans)' }}>
+                    Personaliza a tua experiência Lumara.
+                  </p>
+                  <form onSubmit={handleSaveName} className="flex gap-2">
+                    <input
+                      type="text"
+                      value={nameInput}
+                      onChange={(e) => setNameInput(e.target.value)}
+                      placeholder="O teu nome"
+                      className="flex-1 text-sm px-3 py-2 rounded-xl border border-lumara-border bg-white focus:outline-none focus:border-lumara-accent-dark"
+                      style={{ fontFamily: 'var(--font-dm-sans)' }}
+                      autoFocus
+                    />
+                    <button
+                      type="submit"
+                      disabled={savingName || !nameInput.trim()}
+                      className="text-sm font-bold px-4 py-2 rounded-xl bg-lumara-accent-dark text-white disabled:opacity-50 transition-opacity"
+                      style={{ fontFamily: 'var(--font-nunito)' }}
+                    >
+                      {savingName ? '…' : 'Guardar'}
+                    </button>
+                  </form>
+                </motion.div>
+              )}
 
               {/* Links — always visible */}
               <ul className="divide-y divide-lumara-border">

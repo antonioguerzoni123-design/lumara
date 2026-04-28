@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
 
 const SHOP_ID = '103627391313';
 const AUTH_BASE = `https://shopify.com/authentication/${SHOP_ID}`;
@@ -12,8 +13,9 @@ export async function GET(request) {
   const returnedState = searchParams.get('state');
   const error = searchParams.get('error');
 
-  const storedState = request.cookies.get('oauth_state')?.value;
-  const codeVerifier = request.cookies.get('pkce_verifier')?.value;
+  const cookieStore = await cookies();
+  const storedState = cookieStore.get('oauth_state')?.value;
+  const codeVerifier = cookieStore.get('pkce_verifier')?.value;
 
   if (error || !code) {
     return NextResponse.redirect(new URL('/login?error=access_denied', request.url));
@@ -45,8 +47,6 @@ export async function GET(request) {
 
     const { access_token, refresh_token, expires_in } = await tokenRes.json();
 
-    const response = NextResponse.redirect(`${reqUrl.origin}/?conta=aberta`);
-
     const isLocalhost = reqUrl.origin.startsWith('http://localhost');
     const secureOpts = {
       httpOnly: true,
@@ -55,26 +55,26 @@ export async function GET(request) {
       path: '/',
     };
 
-    response.cookies.set('shopify_customer_token', access_token, {
+    cookieStore.set('shopify_customer_token', access_token, {
       ...secureOpts,
       maxAge: expires_in ?? 3600,
     });
     if (refresh_token) {
-      response.cookies.set('shopify_customer_refresh_token', refresh_token, {
+      cookieStore.set('shopify_customer_refresh_token', refresh_token, {
         ...secureOpts,
         maxAge: 60 * 60 * 24 * 30,
       });
     }
-    response.cookies.set('shopify_token_expires_at', String(Date.now() + (expires_in ?? 3600) * 1000), {
+    cookieStore.set('shopify_token_expires_at', String(Date.now() + (expires_in ?? 3600) * 1000), {
       ...secureOpts,
       maxAge: expires_in ?? 3600,
     });
 
-    response.cookies.delete('oauth_state');
-    response.cookies.delete('pkce_verifier');
-    response.cookies.delete('oauth_nonce');
+    cookieStore.delete('oauth_state');
+    cookieStore.delete('pkce_verifier');
+    cookieStore.delete('oauth_nonce');
 
-    return response;
+    return NextResponse.redirect(`${reqUrl.origin}/?conta=aberta`);
   } catch (err) {
     console.error('Auth callback error:', err);
     return NextResponse.redirect(new URL('/login?error=server_error', request.url));
