@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
 
 const SHOP_ID = '103627391313';
 const AUTH_BASE = `https://shopify.com/authentication/${SHOP_ID}`;
@@ -12,25 +13,27 @@ export async function GET(request) {
   const returnedState = searchParams.get('state');
   const error = searchParams.get('error');
 
-  console.log('[auth/callback] Recebido — code:', !!code, 'state:', returnedState, 'error:', error);
+  console.log('CALLBACK: code recebido:', !!code, '| state:', returnedState, '| error:', error);
+  console.log('CALLBACK: redirect_uri usado:', redirectUri);
 
   const storedState = request.cookies.get('oauth_state')?.value;
   const codeVerifier = request.cookies.get('pkce_verifier')?.value;
 
-  console.log('[auth/callback] storedState:', storedState, 'codeVerifier presente:', !!codeVerifier);
+  console.log('CALLBACK: storedState:', storedState, '| codeVerifier presente:', !!codeVerifier);
+  console.log('CALLBACK: state match:', storedState === returnedState);
 
   if (error || !code) {
-    console.error('[auth/callback] Sem código ou erro OAuth:', error);
+    console.error('CALLBACK: Sem código ou erro OAuth:', error);
     return NextResponse.redirect(new URL('/login?error=access_denied', request.url));
   }
 
   if (!storedState || storedState !== returnedState) {
-    console.error('[auth/callback] State inválido — stored:', storedState, 'returned:', returnedState);
+    console.error('CALLBACK: State inválido — stored:', storedState, '| returned:', returnedState);
     return NextResponse.redirect(new URL('/login?error=invalid_state', request.url));
   }
 
   try {
-    console.log('[auth/callback] A trocar código por token…');
+    console.log('CALLBACK: A trocar código por token…');
     const tokenRes = await fetch(`${AUTH_BASE}/oauth/token`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -44,16 +47,21 @@ export async function GET(request) {
       cache: 'no-store',
     });
 
+    console.log('CALLBACK: token response status:', tokenRes.status);
+
     if (!tokenRes.ok) {
       const body = await tokenRes.text();
-      console.error('[auth/callback] Token exchange falhou:', tokenRes.status, body);
+      console.error('CALLBACK: Token exchange falhou:', tokenRes.status, body);
       throw new Error(`Token exchange failed: ${tokenRes.status}`);
     }
 
-    const { access_token, refresh_token, expires_in } = await tokenRes.json();
-    console.log('[auth/callback] Token obtido — expires_in:', expires_in, 'refresh_token presente:', !!refresh_token);
+    const tokenData = await tokenRes.json();
+    console.log('CALLBACK: token data:', JSON.stringify(tokenData));
 
-    const response = NextResponse.redirect(`${reqUrl.origin}/?conta=aberta`);
+    const { access_token, refresh_token, expires_in } = tokenData;
+    console.log('CALLBACK: cookie a ser escrito:', access_token?.substring(0, 20));
+
+    const cookieStore = await cookies();
 
     const cookieOpts = {
       httpOnly: true,
@@ -62,29 +70,29 @@ export async function GET(request) {
       path: '/',
     };
 
-    response.cookies.set('shopify_customer_token', access_token, {
+    cookieStore.set('shopify_customer_token', access_token, {
+      ...cookieOpts,
+      maxAge: 60 * 60 * 24 * 7,
+    });
+    cookieStore.set('shopify_token_expires_at', String(Date.now() + (expires_in ?? 3600) * 1000), {
       ...cookieOpts,
       maxAge: 60 * 60 * 24 * 7,
     });
     if (refresh_token) {
-      response.cookies.set('shopify_customer_refresh_token', refresh_token, {
+      cookieStore.set('shopify_customer_refresh_token', refresh_token, {
         ...cookieOpts,
         maxAge: 60 * 60 * 24 * 30,
       });
     }
-    response.cookies.set('shopify_token_expires_at', String(Date.now() + (expires_in ?? 3600) * 1000), {
-      ...cookieOpts,
-      maxAge: 60 * 60 * 24 * 7,
-    });
 
-    response.cookies.delete('oauth_state');
-    response.cookies.delete('pkce_verifier');
-    response.cookies.delete('oauth_nonce');
+    cookieStore.delete('oauth_state');
+    cookieStore.delete('pkce_verifier');
+    cookieStore.delete('oauth_nonce');
 
-    console.log('[auth/callback] Cookie escrito — redirect para /?conta=aberta');
-    return response;
+    console.log('CALLBACK: a redirecionar para /');
+    return NextResponse.redirect(`${reqUrl.origin}/`);
   } catch (err) {
-    console.error('[auth/callback] Erro:', err);
+    console.error('CALLBACK: Erro:', err);
     return NextResponse.redirect(new URL('/login?error=server_error', request.url));
   }
 }
