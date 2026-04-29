@@ -16,9 +16,8 @@ export function usePreferences() {
 
   useEffect(() => {
     if (!customer?.id) { setLoading(false); return; }
-    const customerId = customer.id.split('/').pop();
-    fetch(`/api/preferences?customerId=${customerId}`)
-      .then((r) => r.json())
+    fetch('/api/preferences')
+      .then((r) => r.ok ? r.json() : {})
       .then((data) => {
         setPreferences({ ...DEFAULTS, ...data });
         setLoading(false);
@@ -28,13 +27,12 @@ export function usePreferences() {
 
   const save = useCallback(async (updates) => {
     if (!customer?.id) return;
-    const customerId = customer.id.split('/').pop();
     const merged = { ...preferences, ...updates };
     setPreferences(merged);
     await fetch('/api/preferences', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ customerId, preferences: updates }),
+      body: JSON.stringify({ preferences: updates }),
     });
   }, [preferences, customer]);
 

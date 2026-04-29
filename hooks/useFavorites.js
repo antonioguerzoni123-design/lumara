@@ -22,11 +22,10 @@ export function useFavorites() {
     }
 
     if (customer?.id) {
-      const customerId = customer.id.split('/').pop();
       fetch('/api/favorites/sync', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ customerId, favorites: [product.id ?? product.slug] }),
+        body: JSON.stringify({ favorites: [product.id ?? product.slug] }),
       }).catch(() => {});
     }
   }, [favorites, customer]);

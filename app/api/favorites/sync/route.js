@@ -1,5 +1,6 @@
 import { readFile, writeFile } from 'fs/promises';
 import path from 'path';
+import { getAuthenticatedCustomerId } from '@/lib/serverAuth';
 
 const FILE = path.join(process.cwd(), 'data', 'favorites.json');
 
@@ -12,8 +13,11 @@ async function write(data) {
 }
 
 export async function POST(request) {
-  const { customerId, favorites } = await request.json();
-  if (!customerId || !Array.isArray(favorites)) {
+  const customerId = await getAuthenticatedCustomerId();
+  if (!customerId) return Response.json({ error: 'Unauthorized' }, { status: 401 });
+
+  const { favorites } = await request.json();
+  if (!Array.isArray(favorites)) {
     return Response.json({ error: 'Invalid payload' }, { status: 400 });
   }
 
