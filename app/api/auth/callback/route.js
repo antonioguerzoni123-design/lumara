@@ -73,7 +73,7 @@ export async function GET(request) {
       return NextResponse.redirect(new URL('/login?error=server_error', request.url));
     }
 
-    const cookieStore = await cookies();
+    const response = NextResponse.redirect(`${reqUrl.origin}/`);
 
     const cookieOpts = {
       httpOnly: true,
@@ -82,27 +82,27 @@ export async function GET(request) {
       path: '/',
     };
 
-    cookieStore.set('shopify_customer_token', accessToken, {
+    response.cookies.set('shopify_customer_token', accessToken, {
       ...cookieOpts,
       maxAge: 60 * 60 * 24 * 7,
     });
-    cookieStore.set('shopify_token_expires_at', String(Date.now() + (tokenData.expires_in ?? 3600) * 1000), {
+    response.cookies.set('shopify_token_expires_at', String(Date.now() + (tokenData.expires_in ?? 3600) * 1000), {
       ...cookieOpts,
       maxAge: 60 * 60 * 24 * 7,
     });
     if (tokenData.refresh_token) {
-      cookieStore.set('shopify_customer_refresh_token', tokenData.refresh_token, {
+      response.cookies.set('shopify_customer_refresh_token', tokenData.refresh_token, {
         ...cookieOpts,
         maxAge: 60 * 60 * 24 * 30,
       });
     }
 
-    cookieStore.delete('oauth_state');
-    cookieStore.delete('pkce_verifier');
-    cookieStore.delete('oauth_nonce');
+    response.cookies.delete('oauth_state');
+    response.cookies.delete('pkce_verifier');
+    response.cookies.delete('oauth_nonce');
 
     console.log('CALLBACK: a redirecionar para /');
-    return NextResponse.redirect(`${reqUrl.origin}/`);
+    return response;
   } catch (err) {
     console.error('CALLBACK: Erro:', err);
     return NextResponse.redirect(new URL('/login?error=server_error', request.url));
