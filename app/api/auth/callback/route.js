@@ -60,6 +60,19 @@ export async function GET(request) {
     console.log('ACCESS TOKEN prefix:', tokenData.access_token?.substring(0, 10));
     console.log('ID TOKEN prefix:', tokenData.id_token?.substring(0, 10));
 
+    // Garantir que guardamos o token com prefixo shcat_, independentemente do campo
+    const accessToken =
+      (typeof tokenData.access_token === 'string' && tokenData.access_token.startsWith('shcat_'))
+        ? tokenData.access_token
+        : Object.values(tokenData).find(v => typeof v === 'string' && v.startsWith('shcat_'));
+
+    console.log('SHCAT TOKEN encontrado:', !!accessToken, '| prefix:', accessToken?.substring(0, 15));
+
+    if (!accessToken) {
+      console.error('CALLBACK: Nenhum token shcat_ encontrado na resposta. Fields:', Object.keys(tokenData));
+      return NextResponse.redirect(new URL('/login?error=server_error', request.url));
+    }
+
     const cookieStore = await cookies();
 
     const cookieOpts = {
@@ -69,7 +82,7 @@ export async function GET(request) {
       path: '/',
     };
 
-    cookieStore.set('shopify_customer_token', tokenData.access_token, {
+    cookieStore.set('shopify_customer_token', accessToken, {
       ...cookieOpts,
       maxAge: 60 * 60 * 24 * 7,
     });
