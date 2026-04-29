@@ -56,10 +56,9 @@ export async function GET(request) {
     }
 
     const tokenData = await tokenRes.json();
-    console.log('CALLBACK: token data:', JSON.stringify(tokenData));
-
-    const { access_token, refresh_token, expires_in } = tokenData;
-    console.log('CALLBACK: cookie a ser escrito:', access_token?.substring(0, 20));
+    console.log('TOKEN FIELDS:', Object.keys(tokenData));
+    console.log('ACCESS TOKEN prefix:', tokenData.access_token?.substring(0, 10));
+    console.log('ID TOKEN prefix:', tokenData.id_token?.substring(0, 10));
 
     const cookieStore = await cookies();
 
@@ -70,16 +69,16 @@ export async function GET(request) {
       path: '/',
     };
 
-    cookieStore.set('shopify_customer_token', access_token, {
+    cookieStore.set('shopify_customer_token', tokenData.access_token, {
       ...cookieOpts,
       maxAge: 60 * 60 * 24 * 7,
     });
-    cookieStore.set('shopify_token_expires_at', String(Date.now() + (expires_in ?? 3600) * 1000), {
+    cookieStore.set('shopify_token_expires_at', String(Date.now() + (tokenData.expires_in ?? 3600) * 1000), {
       ...cookieOpts,
       maxAge: 60 * 60 * 24 * 7,
     });
-    if (refresh_token) {
-      cookieStore.set('shopify_customer_refresh_token', refresh_token, {
+    if (tokenData.refresh_token) {
+      cookieStore.set('shopify_customer_refresh_token', tokenData.refresh_token, {
         ...cookieOpts,
         maxAge: 60 * 60 * 24 * 30,
       });
