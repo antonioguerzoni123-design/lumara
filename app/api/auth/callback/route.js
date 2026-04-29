@@ -8,7 +8,9 @@ const CLIENT_ID = process.env.SHOPIFY_CUSTOMER_ACCOUNT_API_CLIENT_ID ?? '03907cc
 export async function GET(request) {
   const reqUrl = new URL(request.url);
   const { searchParams } = reqUrl;
-  const redirectUri = process.env.SHOPIFY_CUSTOMER_ACCOUNT_API_REDIRECT_URI ?? `${reqUrl.origin}/api/auth/callback`;
+  const isLocalhost = reqUrl.origin.startsWith('http://localhost');
+  const redirectUri = process.env.SHOPIFY_CUSTOMER_ACCOUNT_API_REDIRECT_URI
+    ?? (isLocalhost ? `${reqUrl.origin}/api/auth/callback` : 'https://www.lumarabeauty.com/api/auth/callback');
   const code = searchParams.get('code');
   const returnedState = searchParams.get('state');
   const error = searchParams.get('error');
