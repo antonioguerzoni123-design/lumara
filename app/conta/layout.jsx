@@ -1,3 +1,5 @@
+import { auth } from '@clerk/nextjs/server';
+import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import { AccountMenu } from '@/components/account/AccountMenu';
@@ -6,7 +8,10 @@ export const metadata = {
   title: 'A minha conta — Lumara',
 };
 
-export default function ContaLayout({ children }) {
+export default async function ContaLayout({ children }) {
+  const { userId } = await auth();
+  if (!userId) redirect('/login');
+
   return (
     <div className="min-h-screen bg-[#FAF8FB]">
       {/* Header bar */}
