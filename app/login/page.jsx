@@ -36,7 +36,7 @@ export default function LoginPage() {
             A tua conta de beleza
           </p>
         </div>
-        <SignIn appearance={clerkAppearance} />
+        <SignIn appearance={clerkAppearance} forceRedirectUrl="/conta" />
       </div>
     </div>
   );

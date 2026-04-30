@@ -36,7 +36,7 @@ export default function CriarContaPage() {
             Cria a tua conta de beleza
           </p>
         </div>
-        <SignUp appearance={clerkAppearance} />
+        <SignUp appearance={clerkAppearance} forceRedirectUrl="/conta" />
       </div>
     </div>
   );

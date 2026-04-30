@@ -1,11 +1,28 @@
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
+import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 
-// Clerk session verification happens in server components and API routes.
-// The proxy just passes every request through — no Edge Runtime Clerk dependency.
-export default function proxy(_req: NextRequest) {
-  return NextResponse.next();
-}
+const isPublicRoute = createRouteMatcher([
+  '/',
+  '/login(.*)',
+  '/criar-conta(.*)',
+  '/loja(.*)',
+  '/produto(.*)',
+  '/promocoes(.*)',
+  '/rituais(.*)',
+  '/sobre-nos(.*)',
+  '/faq(.*)',
+  '/apoio(.*)',
+  '/api/webhooks/(.*)',
+  '/api/checkout(.*)',
+  '/api/favorites(.*)',
+  '/api/preferences(.*)',
+  '/api/support(.*)',
+]);
+
+export default clerkMiddleware(async (auth, req) => {
+  if (!isPublicRoute(req)) {
+    await auth.protect();
+  }
+});
 
 export const config = {
   matcher: [

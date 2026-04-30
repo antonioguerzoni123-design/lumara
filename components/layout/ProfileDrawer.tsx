@@ -1,6 +1,6 @@
 'use client';
 
-import { useClerk } from '@clerk/nextjs';
+import { useClerk, useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { X, ChevronRight, Lock } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -20,6 +20,7 @@ const links = [
 
 export default function ProfileDrawer({ open, onClose }: Props) {
   const { signOut } = useClerk();
+  const { user } = useUser();
   const router = useRouter();
   const { customer, isLoggedIn, isLoading } = useCustomer();
   const [nameInput, setNameInput] = useState('');
@@ -43,6 +44,7 @@ export default function ProfileDrawer({ open, onClose }: Props) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ firstName: nameInput.trim() }),
       });
+      await user?.reload();
       setNameSaved(true);
     } finally {
       setSavingName(false);
