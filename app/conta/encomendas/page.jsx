@@ -1,47 +1,22 @@
-import { cookies } from 'next/headers';
-import { customerFetch } from '@/lib/shopifyCustomer';
+import { currentUser } from '@clerk/nextjs/server';
+import { findCustomerByEmail, getCustomerOrders, mapOrder } from '@/lib/shopifyAdmin';
 import { OrderCard } from '@/components/account/OrderCard';
 import { Package } from 'lucide-react';
 
-const ORDERS_QUERY = `
-  query GetOrders {
-    customer {
-      orders(first: 20) {
-        edges {
-          node {
-            id
-            name
-            processedAt
-            fulfillmentStatus
-            totalPrice { amount currencyCode }
-            lineItems(first: 10) {
-              edges {
-                node {
-                  title
-                  quantity
-                  image { url altText }
-                  price { amount currencyCode }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-`;
-
 export default async function EncomendasPage() {
-  const cookieStore = await cookies();
-  const token = cookieStore.get('shopify_customer_token')?.value;
+  const user = await currentUser();
+  const email = user?.primaryEmailAddress?.emailAddress;
 
   let orders = [];
   let fetchError = null;
 
-  if (token) {
+  if (email) {
     try {
-      const data = await customerFetch(ORDERS_QUERY, {}, token);
-      orders = data?.customer?.orders?.edges?.map((e) => e.node) ?? [];
+      const shopifyCustomer = await findCustomerByEmail(email);
+      if (shopifyCustomer) {
+        const rawOrders = await getCustomerOrders(shopifyCustomer.id);
+        orders = rawOrders.map(mapOrder);
+      }
     } catch (err) {
       fetchError = err.message;
     }

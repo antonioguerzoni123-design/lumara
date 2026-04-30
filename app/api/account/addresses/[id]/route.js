@@ -1,29 +1,17 @@
-import { cookies } from 'next/headers';
-import { customerFetch } from '@/lib/shopifyCustomer';
-
-const DELETE_MUTATION = `
-  mutation DeleteAddress($addressId: ID!) {
-    customerAddressDelete(addressId: $addressId) {
-      deletedAddressId
-      userErrors { field message }
-    }
-  }
-`;
+import { currentUser } from '@clerk/nextjs/server';
+import { findCustomerByEmail, deleteAddress } from '@/lib/shopifyAdmin';
 
 export async function DELETE(request, { params }) {
   const { id } = await params;
-  const cookieStore = await cookies();
-  const token = cookieStore.get('shopify_customer_token')?.value;
-  if (!token) return Response.json({ error: 'Unauthorized' }, { status: 401 });
+  const user = await currentUser();
+  if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
-  const gid = `gid://shopify/MailingAddress/${id}`;
+  const email = user.primaryEmailAddress?.emailAddress;
+  if (!email) return Response.json({ error: 'No email on account' }, { status: 400 });
 
-  try {
-    const data = await customerFetch(DELETE_MUTATION, { addressId: gid }, token);
-    const { userErrors } = data.customerAddressDelete;
-    if (userErrors?.length) return Response.json({ error: userErrors[0].message }, { status: 400 });
-    return Response.json({ ok: true });
-  } catch (err) {
-    return Response.json({ error: err.message }, { status: 500 });
-  }
+  const shopifyCustomer = await findCustomerByEmail(email);
+  if (!shopifyCustomer) return Response.json({ error: 'Customer not found' }, { status: 404 });
+
+  await deleteAddress(shopifyCustomer.id, id);
+  return Response.json({ ok: true });
 }

@@ -1,5 +1,5 @@
-import { cookies } from 'next/headers';
-import { customerFetch } from '@/lib/shopifyCustomer';
+import { currentUser } from '@clerk/nextjs/server';
+import { findCustomerByEmail, getOrder, mapOrderDetail } from '@/lib/shopifyAdmin';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -11,56 +11,29 @@ const statusMap = {
   ON_HOLD: { label: 'Em espera', color: 'bg-gray-100 text-gray-600' },
 };
 
-const ORDER_QUERY = `
-  query GetOrder($id: ID!) {
-    order(id: $id) {
-      id
-      name
-      processedAt
-      fulfillmentStatus
-      totalPrice { amount currencyCode }
-      subtotalPrice { amount currencyCode }
-      totalShippingPrice { amount currencyCode }
-      totalTax { amount currencyCode }
-      shippingAddress {
-        firstName lastName address1 address2 city zoneCode zip countryCode
-      }
-      lineItems(first: 20) {
-        edges {
-          node {
-            title
-            quantity
-            image { url altText }
-            price { amount currencyCode }
-            variantTitle
-          }
-        }
-      }
-      fulfillments(first: 5) {
-        trackingInfo { number url }
-        status
-      }
-    }
-  }
-`;
-
 function fmt(amount, currency) {
   return new Intl.NumberFormat('pt-PT', { style: 'currency', currency }).format(amount);
 }
 
 export default async function OrderDetailPage({ params }) {
   const { id } = await params;
-  const cookieStore = await cookies();
-  const token = cookieStore.get('shopify_customer_token')?.value;
+  const user = await currentUser();
+  const email = user?.primaryEmailAddress?.emailAddress;
 
-  const gid = `gid://shopify/Order/${id}`;
   let order = null;
   let fetchError = null;
 
-  if (token) {
+  if (email) {
     try {
-      const data = await customerFetch(ORDER_QUERY, { id: gid }, token);
-      order = data?.order;
+      const shopifyCustomer = await findCustomerByEmail(email);
+      if (shopifyCustomer) {
+        const rawOrder = await getOrder(id);
+        if (rawOrder && rawOrder.email === email) {
+          order = mapOrderDetail(rawOrder);
+        } else {
+          fetchError = 'Encomenda não encontrada.';
+        }
+      }
     } catch (err) {
       fetchError = err.message;
     }

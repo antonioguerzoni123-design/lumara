@@ -1,4 +1,4 @@
-import { SignIn } from '@clerk/nextjs';
+import { SignUp } from '@clerk/nextjs';
 
 const clerkAppearance = {
   variables: {
@@ -21,7 +21,7 @@ const clerkAppearance = {
   },
 };
 
-export default function LoginPage() {
+export default function CriarContaPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#FAF8FB] px-4">
       <div className="w-full max-w-sm">
@@ -33,10 +33,10 @@ export default function LoginPage() {
             lumara<span style={{ color: '#E0689F', fontSize: '10px', verticalAlign: 'super' }}>●</span>
           </span>
           <p className="mt-2 text-sm text-[#6B6B8A]" style={{ fontFamily: 'var(--font-dm-sans)' }}>
-            A tua conta de beleza
+            Cria a tua conta de beleza
           </p>
         </div>
-        <SignIn appearance={clerkAppearance} />
+        <SignUp appearance={clerkAppearance} />
       </div>
     </div>
   );

@@ -1,3 +1,4 @@
+import { currentUser } from '@clerk/nextjs/server';
 import Link from 'next/link';
 import { Package, MapPin, Heart, Settings, HelpCircle, ArrowRight } from 'lucide-react';
 
@@ -9,11 +10,15 @@ const sections = [
   { href: '/conta/apoio', label: 'Apoio ao cliente', desc: 'Fala connosco — estamos aqui para ajudar', icon: HelpCircle },
 ];
 
-export default function ContaDashboardPage() {
+export default async function ContaDashboardPage() {
+  const user = await currentUser();
+  const firstName = user?.firstName ?? '';
+  const greeting = firstName ? `Bem-vinda de volta, ${firstName}.` : 'Bem-vinda de volta à Lumara.';
+
   return (
     <div>
       <h1 className="text-2xl font-bold text-[#1A1A2E] mb-1">A minha conta</h1>
-      <p className="text-sm text-[#6B6B8A] mb-6">Bem-vinda de volta à Lumara.</p>
+      <p className="text-sm text-[#6B6B8A] mb-6">{greeting}</p>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         {sections.map(({ href, label, desc, icon: Icon }) => (

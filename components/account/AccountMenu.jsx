@@ -1,8 +1,9 @@
 'use client';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { Package, MapPin, Heart, Settings, HelpCircle, LogOut } from 'lucide-react';
 import { useCustomer } from '@/hooks/useCustomer';
+import { useClerk } from '@clerk/nextjs';
 
 const links = [
   { href: '/conta/encomendas', label: 'Encomendas', icon: Package },
@@ -14,7 +15,9 @@ const links = [
 
 export function AccountMenu() {
   const pathname = usePathname();
+  const router = useRouter();
   const { customer } = useCustomer();
+  const { signOut } = useClerk();
 
   const name = customer
     ? [customer.firstName, customer.lastName].filter(Boolean).join(' ') || 'Cliente'
@@ -56,13 +59,13 @@ export function AccountMenu() {
       </ul>
 
       <div className="border-t border-[#E8E0F0] p-2">
-        <a
-          href="/api/auth/logout"
+        <button
+          onClick={() => signOut(() => router.push('/'))}
           className="flex items-center gap-3 px-5 py-3 text-sm text-[#6B6B8A] hover:text-red-500 hover:bg-red-50 rounded-xl transition-colors w-full"
         >
           <LogOut size={16} />
           Terminar sessão
-        </a>
+        </button>
       </div>
     </nav>
   );

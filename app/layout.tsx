@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Nunito, DM_Sans } from "next/font/google";
+import { ClerkProvider } from "@clerk/nextjs";
 import "./globals.css";
 
 const nunito = Nunito({
@@ -25,16 +26,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="pt"
-      className={`${nunito.variable} ${dmSans.variable} h-full`}
-    >
-      <body
-        className="min-h-full flex flex-col"
-        style={{ fontFamily: "var(--font-dm-sans), system-ui, sans-serif" }}
+    <ClerkProvider>
+      <html
+        lang="pt"
+        className={`${nunito.variable} ${dmSans.variable} h-full`}
       >
-        {children}
-      </body>
-    </html>
+        <body
+          className="min-h-full flex flex-col"
+          style={{ fontFamily: "var(--font-dm-sans), system-ui, sans-serif" }}
+        >
+          {children}
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }

@@ -2,16 +2,7 @@ export interface Customer {
   id: string;
   firstName: string;
   lastName: string;
-  emailAddress: { emailAddress: string } | null;
-  phoneNumber: { phoneNumber: string } | null;
-  defaultAddress: {
-    address1: string;
-    address2: string;
-    city: string;
-    zoneCode: string;
-    zip: string;
-    countryCode: string;
-  } | null;
+  emailAddress: { emailAddress: string };
 }
 
 export interface UseCustomerResult {
@@ -20,4 +11,4 @@ export interface UseCustomerResult {
   isLoggedIn: boolean;
 }
 
-export function useCustomer(): UseCustomerResult;
+export declare function useCustomer(): UseCustomerResult;

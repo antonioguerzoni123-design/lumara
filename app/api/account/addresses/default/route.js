@@ -1,29 +1,17 @@
-import { cookies } from 'next/headers';
-import { customerFetch } from '@/lib/shopifyCustomer';
-
-const SET_DEFAULT_MUTATION = `
-  mutation SetDefault($addressId: ID!) {
-    customerDefaultAddressUpdate(addressId: $addressId) {
-      customer { defaultAddress { id } }
-      userErrors { field message }
-    }
-  }
-`;
+import { currentUser } from '@clerk/nextjs/server';
+import { findCustomerByEmail, setDefaultAddress } from '@/lib/shopifyAdmin';
 
 export async function POST(request) {
-  const cookieStore = await cookies();
-  const token = cookieStore.get('shopify_customer_token')?.value;
-  if (!token) return Response.json({ error: 'Unauthorized' }, { status: 401 });
+  const user = await currentUser();
+  if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
-  const { id } = await request.json();
-  const gid = id.startsWith('gid://') ? id : `gid://shopify/MailingAddress/${id}`;
+  const email = user.primaryEmailAddress?.emailAddress;
+  if (!email) return Response.json({ error: 'No email on account' }, { status: 400 });
 
-  try {
-    const data = await customerFetch(SET_DEFAULT_MUTATION, { addressId: gid }, token);
-    const { userErrors } = data.customerDefaultAddressUpdate;
-    if (userErrors?.length) return Response.json({ error: userErrors[0].message }, { status: 400 });
-    return Response.json({ ok: true });
-  } catch (err) {
-    return Response.json({ error: err.message }, { status: 500 });
-  }
+  const { id: addressId } = await request.json();
+  const shopifyCustomer = await findCustomerByEmail(email);
+  if (!shopifyCustomer) return Response.json({ error: 'Customer not found' }, { status: 404 });
+
+  await setDefaultAddress(shopifyCustomer.id, addressId);
+  return Response.json({ ok: true });
 }

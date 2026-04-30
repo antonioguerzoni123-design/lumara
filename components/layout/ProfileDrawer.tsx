@@ -1,10 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useClerk } from '@clerk/nextjs';
+import { useRouter } from 'next/navigation';
 import { X, ChevronRight, Lock } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { useCustomer } from '@/hooks/useCustomer';
+import { useState } from 'react';
 
 type Props = { open: boolean; onClose: () => void };
 
@@ -17,6 +19,8 @@ const links = [
 ];
 
 export default function ProfileDrawer({ open, onClose }: Props) {
+  const { signOut } = useClerk();
+  const router = useRouter();
   const { customer, isLoggedIn, isLoading } = useCustomer();
   const [nameInput, setNameInput] = useState('');
   const [savingName, setSavingName] = useState(false);
@@ -137,7 +141,7 @@ export default function ProfileDrawer({ open, onClose }: Props) {
                 </motion.div>
               )}
 
-              {/* Links — always visible */}
+              {/* Links */}
               <ul className="divide-y divide-lumara-border">
                 {links.map((link) => (
                   <li key={link.label}>
@@ -152,15 +156,16 @@ export default function ProfileDrawer({ open, onClose }: Props) {
                         <ChevronRight size={14} className="text-lumara-gray" />
                       </Link>
                     ) : (
-                      <a
-                        href="/api/auth/shopify"
+                      <Link
+                        href="/login"
+                        onClick={onClose}
                         className="flex items-center justify-between py-3.5 text-sm text-lumara-gray hover:text-lumara-accent-dark transition-colors"
                         style={{ fontFamily: 'var(--font-dm-sans)' }}
                         title="Inicia sessão para aceder"
                       >
                         <span>{link.label}</span>
                         <Lock size={13} className="text-lumara-gray/60" />
-                      </a>
+                      </Link>
                     )}
                   </li>
                 ))}
@@ -170,21 +175,22 @@ export default function ProfileDrawer({ open, onClose }: Props) {
             {/* Footer */}
             <div className="px-7 pb-6 pt-4 border-t border-lumara-border">
               {isLoggedIn ? (
-                <a
-                  href="/api/auth/logout"
+                <button
+                  onClick={() => signOut(() => { onClose(); router.push('/'); })}
                   className="flex w-full justify-center bg-transparent text-lumara-warm-black border-[1.5px] border-lumara-warm-black py-3.5 rounded-full text-sm font-bold hover:bg-red-50 hover:border-red-400 hover:text-red-600 transition-colors"
                   style={{ fontFamily: 'var(--font-nunito)' }}
                 >
                   Terminar sessão
-                </a>
+                </button>
               ) : (
-                <a
-                  href="/api/auth/shopify"
+                <Link
+                  href="/login"
+                  onClick={onClose}
                   className="flex w-full justify-center bg-transparent text-lumara-warm-black border-[1.5px] border-lumara-warm-black py-3.5 rounded-full text-sm font-bold hover:bg-lumara-warm-black hover:text-lumara-offwhite transition-colors"
                   style={{ fontFamily: 'var(--font-nunito)' }}
                 >
                   Iniciar sessão
-                </a>
+                </Link>
               )}
             </div>
           </motion.aside>
