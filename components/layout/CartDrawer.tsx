@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { X, Minus, Plus, ShoppingBag, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useUser, useClerk } from '@clerk/nextjs';
 import { useCartStore } from '@/lib/cart';
 import { driveImage } from '@/lib/products';
 
@@ -15,8 +16,10 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
   const { items, removeItem, updateQuantity, total, count } = useCartStore();
   const [loading, setLoading] = useState(false);
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
+  const { isSignedIn } = useUser();
+  const { openSignIn } = useClerk();
   const subtotal = total();
-  const shipping = subtotal > 50 || subtotal === 0 ? 0 : 3.90;
+  const shipping = subtotal >= 40 || subtotal === 0 ? 0 : 3.99;
   const grandTotal = subtotal + shipping;
   const fmt = (n: number) => n.toFixed(2).replace('.', ',');
 
@@ -33,18 +36,23 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
       return;
     }
 
-    const lines = checkoutableItems.map((item) => ({
-      merchandiseId: item.shopifyVariantId!,
-      quantity: item.quantity,
-    }));
+    if (!isSignedIn) {
+      openSignIn({ fallbackRedirectUrl: window.location.href });
+      return;
+    }
 
     setLoading(true);
     setCheckoutError(null);
     try {
-      const res = await fetch('/api/checkout', {
+      const res = await fetch('/api/checkout/create-session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ lines }),
+        body: JSON.stringify({
+          items: checkoutableItems.map((item) => ({
+            shopifyVariantId: item.shopifyVariantId!,
+            quantity: item.quantity,
+          })),
+        }),
       });
       const data = await res.json();
       if (data.url) {
@@ -209,6 +217,11 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                     <div className="flex justify-between text-sm text-lumara-gray" style={{ fontFamily: 'var(--font-dm-sans)' }}>
                       <span>Envio</span><span>{shipping === 0 ? 'Grátis' : `€${fmt(shipping)}`}</span>
                     </div>
+                    {shipping > 0 && subtotal > 0 && (
+                      <p className="text-[11px] text-lumara-accent-dark" style={{ fontFamily: 'var(--font-dm-sans)' }}>
+                        Faltam €{fmt(40 - subtotal)} para envio grátis
+                      </p>
+                    )}
                     <div
                       className="flex justify-between text-[17px] font-bold text-lumara-warm-black pt-2.5 border-t border-lumara-border"
                       style={{ fontFamily: 'var(--font-nunito)' }}

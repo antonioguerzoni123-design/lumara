@@ -22,7 +22,7 @@ const faqs = [
       },
       {
         q: 'Qual é o valor mínimo para envio grátis?',
-        a: 'Envio gratuito em todas as encomendas acima de €40 para Portugal. Abaixo desse valor é cobrada uma taxa de envio.',
+        a: 'Envio gratuito em todas as encomendas iguais ou superiores a €40 para Portugal. Abaixo de €40 é cobrada uma taxa de envio de €3,99, independentemente da localização.',
       },
       {
         q: 'Enviam para outros países?',

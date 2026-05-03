@@ -7,76 +7,24 @@ import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import Newsletter from '@/components/sections/Newsletter';
 
-const bundles = [
-  {
-    id: 'bundle-styling-completo',
-    name: 'Bundle Styling Completo',
-    subtitle: 'Profissional, em casa',
-    description:
-      'Tudo o que precisas para um ritual de styling de salão, sem sair de casa. O duo perfeito para alisar, secar e modelar com resultados profissionais.',
-    items: ['LumaGlide Pro', 'VelAir Pro Kit'],
-    originalTotal: 164.98,
-    bundlePrice: 114.99,
-    savings: 49.99,
-    savingsPercent: 30,
-    badge: 'Mais Popular',
-    featured: true,
-    tone: 'linear-gradient(135deg, #F3EFFE 0%, #E0D4F9 100%)',
-    accent: '#8B6BE0',
-    image: '/bundles/bundle-styling-completo.png',
-  },
-  {
-    id: 'bundle-skin-ritual',
-    name: 'Bundle Skin Ritual',
-    subtitle: 'K-beauty em 3 passos',
-    description:
-      'A rotina de skin care coreana que realmente funciona. Limpa, trata e hidrata em três passos pensados para trabalhar juntos.',
-    items: ['Eelhoe Centella Óleo de Limpeza', 'Essência de Mucina de Caracol', 'Milk Glow Tónico'],
-    originalTotal: 51.40,
-    bundlePrice: 39.99,
-    savings: 11.41,
-    savingsPercent: 22,
-    badge: 'Skin Care',
-    featured: false,
-    tone: 'linear-gradient(135deg, #FDF0F5 0%, #F9D8E8 100%)',
-    accent: '#E0689F',
-    image: '/bundles/bundle-skin-ritual.png',
-  },
-  {
-    id: 'bundle-sono-cabelo',
-    name: 'Bundle Sono & Cabelo',
-    subtitle: 'Cuida enquanto dormes',
-    description:
-      'O ritual noturno completo para proteger e nutrir o cabelo durante o sono. Menos frisado, mais brilho — de manhã, sem esforço.',
-    items: ['Touca de Cetim Lumara', 'Fronha de Seda Lumara', 'Eelhoe Rosemary Hair Oil'],
-    originalTotal: 56.85,
-    bundlePrice: 44.99,
-    savings: 11.86,
-    savingsPercent: 21,
-    badge: 'Hair Care',
-    featured: false,
-    tone: 'linear-gradient(135deg, #F3EFFE 0%, #FDF0F5 100%)',
-    accent: '#8B6BE0',
-    image: '/bundles/bundle-sono-cabelo.png',
-  },
-  {
-    id: 'bundle-iniciante-perfeito',
-    name: 'Bundle Iniciante Perfeito',
-    subtitle: 'O melhor começo',
-    description:
-      'O primeiro passo ideal para quem quer elevar o ritual de beleza. Um produto de cabelo, um de skin care — o essencial, sem comprometer.',
-    items: ['LumaGlide Mini', 'Sérum PDRN para Olheiras'],
-    originalTotal: 54.68,
-    bundlePrice: 44.99,
-    savings: 9.69,
-    savingsPercent: 18,
-    badge: 'Starter',
-    featured: false,
-    tone: 'linear-gradient(135deg, #FAF8FB 0%, #F3EFFE 100%)',
-    accent: '#E0689F',
-    image: '/bundles/bundle-iniciante-perfeito.png',
-  },
-];
+import { bundles as bundleData } from '@/data/bundles';
+
+const bundles = bundleData.map((b) => ({
+  id: b.id,
+  name: b.name,
+  subtitle: b.subtitle,
+  description: b.hookEmotional,
+  items: b.items.map((i) => i.name),
+  originalTotal: b.originalTotal,
+  bundlePrice: b.bundlePrice,
+  savings: b.savings,
+  savingsPercent: b.savingsPercent,
+  badge: b.badge,
+  featured: b.featured,
+  tone: b.tone,
+  accent: b.accent,
+  image: b.image,
+}));
 
 const promos = [
   {
@@ -87,8 +35,8 @@ const promos = [
   },
   {
     icon: <Package size={22} />,
-    title: 'Envio grátis em Portugal',
-    description: 'Envio gratuito em todas as encomendas acima de €40 para Portugal continental.',
+    title: 'Envio para Portugal',
+    description: 'Grátis em encomendas acima de €40. Taxa de €3,99 abaixo de €40. Rastreamento incluído.',
     code: null,
   },
   {
@@ -323,11 +271,11 @@ export default function PromocoesPage() {
                       </div>
 
                       <Link
-                        href="/loja"
+                        href={`/bundles/${bundle.id}`}
                         className="inline-flex items-center gap-2 text-white text-[13px] font-bold px-6 py-3 rounded-full transition-all duration-200 hover:-translate-y-px"
                         style={{ background: bundle.accent, fontFamily: 'var(--font-nunito)' }}
                       >
-                        Ver produtos <ArrowRight size={14} />
+                        Ver bundle <ArrowRight size={14} />
                       </Link>
                     </div>
                   </div>

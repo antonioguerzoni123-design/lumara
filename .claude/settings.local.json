@@ -1,0 +1,32 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__claude_ai_Shopify__graphql_schema",
+      "Bash(node -e \"const Stripe = require\\('stripe'\\); const s = new Stripe\\('sk_test_x'\\); console.log\\(s.getApiField ? s.getApiField\\('version'\\) : 'n/a'\\)\")",
+      "Bash(npx prisma *)",
+      "Bash(npm install *)",
+      "Bash(npx tsc *)",
+      "Bash(node -e \"const Stripe = require\\('stripe'\\); const s = new Stripe\\('sk_test_x'\\); const types = Object.keys\\(Stripe\\)\")",
+      "Bash(pkill -f \"next dev\")",
+      "Bash(npm run *)",
+      "Bash(echo \"PID: $!\")",
+      "Bash(node -e ' *)",
+      "Bash(python3 -c ' *)",
+      "Bash(stripe listen *)",
+      "Bash(echo \"Listener PID: $!\")",
+      "Read(//tmp/**)",
+      "Bash(stripe events *)",
+      "Bash(curl *)",
+      "Bash(pkill -f \"stripe listen\")",
+      "Bash(stripe config *)",
+      "Bash(vercel env *)",
+      "Bash(vercel inspect *)",
+      "Bash(vercel ls *)",
+      "Bash(vercel alias *)",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(json.dumps\\(d.get\\('scripts',{}\\), indent=2\\)\\)\")",
+      "Bash(vercel *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)"
+    ]
+  }
+}

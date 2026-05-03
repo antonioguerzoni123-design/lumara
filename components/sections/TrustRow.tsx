@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 const items = [
   {
     label: 'Envio para Portugal',
-    sub: '5 a 10 dias úteis com rastreamento',
+    sub: 'Grátis acima de €40 · €3,99 abaixo',
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" className="w-[30px] h-[30px] text-lumara-accent-dark flex-shrink-0">
         <path d="M3 9h13l4 4v5h-2M3 9v9h14M3 9l2-4h9l2 4M7 18a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm11 0a2 2 0 1 0 0-4 2 2 0 0 0 0 4z" />
@@ -32,7 +32,7 @@ const items = [
   },
   {
     label: 'Pagamento seguro',
-    sub: 'MB Way · Multibanco · cartão',
+    sub: 'Cartão · MB Way · PayPal e mais',
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" className="w-[30px] h-[30px] text-lumara-accent-dark flex-shrink-0">
         <rect x="3" y="6" width="18" height="12" rx="2" /><path d="M3 10h18" />

@@ -1,0 +1,42 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model CheckoutSession {
+  id                    String         @id @default(cuid())
+  clerkUserId           String
+  stripeSessionId       String         @unique
+  stripePaymentIntentId String?
+  stripeCustomerId      String?
+  shopifyOrderId        String?
+  shopifyOrderName      String?
+  status                CheckoutStatus @default(PENDING)
+  lineItemsSnapshot     Json
+  shippingAmount        Int            @default(0)
+  taxAmount             Int?
+  discountAmount        Int?
+  amountTotal           Int?
+  currency              String         @default("EUR")
+  shopifyError          String?
+  createdAt             DateTime       @default(now())
+  updatedAt             DateTime       @updatedAt
+}
+
+model WebhookEvent {
+  id            String   @id @default(cuid())
+  stripeEventId String   @unique
+  type          String
+  processedAt   DateTime @default(now())
+}
+
+enum CheckoutStatus {
+  PENDING
+  PAID
+  EXPIRED
+  CANCELLED
+  PAID_BUT_SHOPIFY_FAILED
+}

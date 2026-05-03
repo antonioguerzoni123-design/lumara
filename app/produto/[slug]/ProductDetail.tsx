@@ -18,7 +18,7 @@ const FAQS: { q: string; a: string }[] = [
   },
   {
     q: 'Quanto tempo demora o envio?',
-    a: 'Os envios para Portugal continental demoram 5–10 dias úteis com rastreamento incluído. Ilhas: 7–14 dias úteis.',
+    a: 'Os envios para Portugal demoram 2–10 dias úteis com rastreamento incluído. Envio gratuito em encomendas iguais ou superiores a €40. Abaixo de €40, taxa de €3,99.',
   },
   {
     q: 'O produto tem garantia?',
