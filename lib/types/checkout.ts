@@ -1,22 +1,16 @@
-import { z } from 'zod';
-
 export type CartLineInput = {
   shopifyVariantId: string;
   quantity: number;
 };
 
-export const ValidatedLineSchema = z.object({
-  shopifyVariantId: z.string(),
-  productTitle: z.string(),
-  variantTitle: z.string(),
-  price: z.number(),
-  quantity: z.number(),
-  imageUrl: z.string().optional(),
-});
-
-export const ValidatedLinesSchema = z.array(ValidatedLineSchema);
-
-export type ValidatedLine = z.infer<typeof ValidatedLineSchema>;
+export type ValidatedLine = {
+  shopifyVariantId: string;
+  productTitle: string;
+  variantTitle: string;
+  price: number;
+  quantity: number;
+  imageUrl?: string;
+};
 
 export type ShopifyAddress = {
   firstName: string;

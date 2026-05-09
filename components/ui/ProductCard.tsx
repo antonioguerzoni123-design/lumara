@@ -1,8 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import Link from 'next/link';
-import { Heart, Star } from 'lucide-react';
+import { Heart, Star, Check } from 'lucide-react';
 import { driveImage, Product } from '@/lib/products';
 import { useCartStore } from '@/lib/cart';
 import { useLikesStore } from '@/lib/likes';
@@ -37,6 +37,10 @@ function StarRating({ rating, count }: { rating: number; count: number }) {
 
 export default function ProductCard({ product }: ProductCardProps) {
   const [imgLoaded, setImgLoaded] = useState(false);
+  const [added, setAdded] = useState(false);
+  const imgRef = useCallback((el: HTMLImageElement | null) => {
+    if (el?.complete) setImgLoaded(true);
+  }, []);
   const addItem = useCartStore((s) => s.addItem);
   const { likes, toggleLike } = useLikesStore();
   const liked = likes.includes(product.id);
@@ -52,6 +56,8 @@ export default function ProductCard({ product }: ProductCardProps) {
       image: product.images[0] ?? '',
       shopifyVariantId: product._defaultVariantId ?? undefined,
     });
+    setAdded(true);
+    setTimeout(() => setAdded(false), 1500);
   };
 
   const handleLike = (e: React.MouseEvent) => {
@@ -68,12 +74,15 @@ export default function ProductCard({ product }: ProductCardProps) {
           <div className="absolute inset-0 bg-lumara-bg2 animate-pulse rounded-lg" />
         )}
         <img
+          ref={imgRef}
           src={driveImage(product.images[0])}
           alt={product.name}
+          loading="lazy"
           className={`w-full h-full object-cover transition-transform duration-300 group-hover:scale-105 ${
             imgLoaded ? 'opacity-100' : 'opacity-0'
           }`}
           onLoad={() => setImgLoaded(true)}
+          onError={(e) => { (e.target as HTMLImageElement).src = '/placeholder-product.svg'; setImgLoaded(true); }}
         />
 
         {/* Discount badge */}
@@ -120,10 +129,10 @@ export default function ProductCard({ product }: ProductCardProps) {
         <button
           onClick={handleAdd}
           aria-label={`Adicionar ${product.name} ao carrinho`}
-          className="absolute left-3 right-3 bottom-3 bg-lumara-warm-black text-lumara-offwhite py-3 rounded-full text-[13px] font-bold flex items-center justify-center gap-1.5 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-[250ms] ease-out"
+          className={`absolute left-3 right-3 bottom-3 py-3 rounded-full text-[13px] font-bold flex items-center justify-center gap-1.5 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-[250ms] ease-out ${added ? 'bg-emerald-500 text-white' : 'bg-lumara-warm-black text-lumara-offwhite'}`}
           style={{ fontFamily: 'var(--font-nunito)' }}
         >
-          + Adicionar ao carrinho
+          {added ? <><Check size={13} strokeWidth={2.5} /> Adicionado</> : '+ Adicionar ao carrinho'}
         </button>
       </div>
 

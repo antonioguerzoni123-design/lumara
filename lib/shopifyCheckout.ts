@@ -1,5 +1,4 @@
 import type { CartLineInput, ValidatedLine, ShopifyAddress, ShopifyOrderInput } from './types/checkout';
-import { ValidatedLinesSchema } from './types/checkout';
 import { prisma } from './prisma';
 import { stripe } from './stripe';
 
@@ -69,6 +68,36 @@ const GET_VARIANT_QUERY = `
   }
 `;
 
+// Fallback for variants not published to Storefront channel (e.g. Shopify Bundles app products).
+async function validateVariantViaAdmin(gid: string, quantity: number): Promise<ValidatedLine | null> {
+  const numericId = gid.split('/').pop();
+  if (!numericId) return null;
+
+  const variantRes = await fetch(
+    `https://${DOMAIN}/admin/api/${ADMIN_VERSION}/variants/${numericId}.json`,
+    { headers: { 'Content-Type': 'application/json', 'X-Shopify-Access-Token': ADMIN_TOKEN }, cache: 'no-store' }
+  );
+  if (!variantRes.ok) return null;
+  const { variant } = await variantRes.json();
+  if (!variant) return null;
+
+  const productRes = await fetch(
+    `https://${DOMAIN}/admin/api/${ADMIN_VERSION}/products/${variant.product_id}.json?fields=id,title,images`,
+    { headers: { 'Content-Type': 'application/json', 'X-Shopify-Access-Token': ADMIN_TOKEN }, cache: 'no-store' }
+  );
+  const productData = productRes.ok ? await productRes.json() : null;
+  const product = productData?.product;
+
+  return {
+    shopifyVariantId: gid,
+    productTitle: product?.title ?? variant.title,
+    variantTitle: variant.title,
+    price: parseFloat(variant.price),
+    quantity,
+    imageUrl: product?.images?.[0]?.src ?? undefined,
+  };
+}
+
 export async function validateCartItems(lines: CartLineInput[]): Promise<ValidatedLine[]> {
   const validated: ValidatedLine[] = [];
 
@@ -77,7 +106,13 @@ export async function validateCartItems(lines: CartLineInput[]): Promise<Validat
     const variant = data?.node;
 
     if (!variant) {
-      throw Object.assign(new Error(`Produto não encontrado: ${line.shopifyVariantId}`), { code: 'NOT_FOUND' });
+      // Product not on Storefront channel — try Admin REST API (covers Shopify Bundles app products)
+      const adminLine = await validateVariantViaAdmin(line.shopifyVariantId, line.quantity);
+      if (!adminLine) {
+        throw Object.assign(new Error(`Produto não encontrado: ${line.shopifyVariantId}`), { code: 'NOT_FOUND' });
+      }
+      validated.push(adminLine);
+      continue;
     }
 
     if (!variant.availableForSale) {
@@ -271,7 +306,7 @@ export async function retryCreateShopifyOrder(checkoutSessionId: string): Promis
     phone: customerDetails?.phone ?? undefined,
   };
 
-  const lines = ValidatedLinesSchema.parse(session.lineItemsSnapshot);
+  const lines = session.lineItemsSnapshot as ValidatedLine[];
   const shippingPrice = (stripeSession.total_details?.amount_shipping ?? session.shippingAmount) / 100;
   const amountTotal = (stripeSession.amount_total ?? session.amountTotal ?? 0) / 100;
 

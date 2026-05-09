@@ -68,7 +68,7 @@ export default function LikesDrawer({ open, onClose }: Props) {
                 {likedProducts.map((p) => (
                   <li key={p.id} className="grid grid-cols-[72px_1fr_auto] gap-4 py-4 items-start">
                     <Link href={`/produto/${p.slug}`} onClick={onClose} className="w-[72px] h-[72px] rounded-lg bg-lumara-bg2 overflow-hidden block">
-                      <img src={p.images[0]} alt={p.name} className="w-full h-full object-cover" />
+                      <img src={p.images[0]} alt={p.name} loading="lazy" className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).src = '/placeholder-product.svg'; }} />
                     </Link>
                     <div className="min-w-0">
                       <Link href={`/produto/${p.slug}`} onClick={onClose}>

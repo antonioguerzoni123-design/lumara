@@ -16,6 +16,8 @@ export type BundleFaq = {
 
 export type Bundle = {
   id: string;
+  shopifyHandle?: string;
+  defaultVariant?: string;
   name: string;
   subtitle: string;
   headline: string;
@@ -45,6 +47,8 @@ export type Bundle = {
 export const bundles: Bundle[] = [
   {
     id: 'bundle-styling-completo',
+    shopifyHandle: 'bundle-styling-completo',
+    defaultVariant: 'Preto / Rosa',
     name: 'Bundle Styling Completo',
     subtitle: 'LumaGlide Pro + VelAir Pro Kit',
     headline: 'O duo que substitui o salão — na tua bancada, todos os dias.',
@@ -138,6 +142,7 @@ export const bundles: Bundle[] = [
   },
   {
     id: 'bundle-skin-ritual',
+    shopifyHandle: 'bundle-skin-ritual',
     name: 'Bundle Skin Ritual',
     subtitle: 'Eelhoe Centella Óleo + Essência Caracol + Milk Glow Tónico',
     headline: 'A rotina de três passos que transforma a pele — uma vez que começas, não paras.',
@@ -231,6 +236,7 @@ export const bundles: Bundle[] = [
   },
   {
     id: 'bundle-sono-cabelo',
+    shopifyHandle: 'bundle-sono-cabelo',
     name: 'Bundle Sono & Cabelo',
     subtitle: 'Touca de Cetim + Fronha de Seda + Eelhoe Rosemary Hair Oil',
     headline: 'O ritual que trabalha enquanto dormes — e o cabelo agradece de manhã.',
@@ -328,6 +334,8 @@ export const bundles: Bundle[] = [
   },
   {
     id: 'bundle-iniciante-perfeito',
+    shopifyHandle: 'bundle-iniciante-perfeito',
+    defaultVariant: 'Preto',
     name: 'Bundle Iniciante Perfeito',
     subtitle: 'LumaGlide Mini + Sérum PDRN para Olheiras',
     headline: 'O essencial que muda tudo — cabelo e pele, num único passo em frente.',

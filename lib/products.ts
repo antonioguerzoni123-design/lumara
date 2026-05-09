@@ -15,6 +15,7 @@ export type Product = {
   badge?: string;
   featured?: boolean;
   variants?: string[];
+  defaultVariant?: string;
   rating?: number;
   reviewCount?: number;
   includedItems?: string[];
@@ -60,6 +61,7 @@ export const products: Product[] = [
       '/products/lumaglide-pro-5.png',
     ],
     includedItems: ['Escova alisadora LumaGlide Pro', 'Cabo USB', 'Manual do utilizador'],
+    defaultVariant: 'Preto',
     shopifyHandle: 'hair-straightener-brush-with-lcd-display-cordless-usb-charging-straightener-portable-mini-straightening-brush-for-home-travel',
   },
   {
@@ -96,6 +98,7 @@ export const products: Product[] = [
       '/products/lumaglide-mini-6.png',
     ],
     includedItems: ['Escova alisadora LumaGlide Mini', 'Cabo USB', 'Tampa de protecção', 'Manual do utilizador'],
+    defaultVariant: 'Preto',
     shopifyHandle: 'mini-pente-de-alisamento-de-cabelo-carregamento-sem-fio-portatil-multifuncional-cuidados-com-o-cabelo-nao-machuca-estilo-de-cabelo-alisador-de-cabelo',
   },
   {

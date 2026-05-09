@@ -1,15 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { Check, ChevronDown, Star } from 'lucide-react';
+import { Check, ChevronDown, Star, ShoppingBag } from 'lucide-react';
 import { Product, driveImage } from '@/lib/products';
 import { useCartStore } from '@/lib/cart';
 import StatBar from '@/components/ui/StatBar';
 import Badge from '@/components/ui/Badge';
 import SectionLabel from '@/components/ui/SectionLabel';
 import ProductCard from '@/components/ui/ProductCard';
-import Button from '@/components/ui/Button';
 
 const FAQS: { q: string; a: string }[] = [
   {
@@ -45,8 +44,13 @@ type Props = {
 
 export default function ProductDetail({ product, related }: Props) {
   const [activeImage, setActiveImage] = useState(0);
-  const [selectedVariant, setSelectedVariant] = useState(product.variants?.[0]);
+  const [mainImgLoaded, setMainImgLoaded] = useState(false);
+  const mainImgRef = useCallback((el: HTMLImageElement | null) => {
+    if (el?.complete) setMainImgLoaded(true);
+  }, []);
+  const [selectedVariant, setSelectedVariant] = useState(product.defaultVariant ?? product.variants?.[0]);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [added, setAdded] = useState(false);
   const addItem = useCartStore((s) => s.addItem);
 
   // Price shown: variant-specific if available, otherwise product base price
@@ -76,17 +80,25 @@ export default function ProductDetail({ product, related }: Props) {
       variant: selectedVariant,
       shopifyVariantId: shopifyVariantId ?? undefined,
     });
+    setAdded(true);
+    setTimeout(() => setAdded(false), 1500);
   };
 
   return (
     <div className="max-w-7xl mx-auto px-6 lg:px-10">
       <div className="py-16 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
         <div className="space-y-4">
-          <div className="aspect-square bg-lumara-nude-light overflow-hidden">
+          <div className="relative aspect-square bg-lumara-nude-light overflow-hidden">
+            {!mainImgLoaded && (
+              <div className="absolute inset-0 bg-lumara-bg2 animate-pulse" />
+            )}
             <img
+              ref={mainImgRef}
               src={driveImage(product.images[activeImage])}
               alt={`${product.name} — imagem ${activeImage + 1}`}
-              className="w-full h-full object-cover"
+              className={`w-full h-full object-cover transition-opacity duration-300 ${mainImgLoaded ? 'opacity-100' : 'opacity-0'}`}
+              onLoad={() => setMainImgLoaded(true)}
+              onError={(e) => { (e.target as HTMLImageElement).src = '/placeholder-product.svg'; setMainImgLoaded(true); }}
             />
           </div>
           {product.images.length > 1 && (
@@ -94,7 +106,7 @@ export default function ProductDetail({ product, related }: Props) {
               {product.images.map((imgId, i) => (
                 <button
                   key={imgId}
-                  onClick={() => setActiveImage(i)}
+                  onClick={() => { setActiveImage(i); setMainImgLoaded(false); }}
                   className={`shrink-0 w-16 h-20 overflow-hidden border-b-2 transition-colors ${
                     activeImage === i ? 'border-lumara-gold' : 'border-transparent'
                   }`}
@@ -103,7 +115,9 @@ export default function ProductDetail({ product, related }: Props) {
                   <img
                     src={driveImage(imgId)}
                     alt={`${product.name} miniatura ${i + 1}`}
+                    loading="lazy"
                     className="w-full h-full object-cover"
+                    onError={(e) => { (e.target as HTMLImageElement).src = '/placeholder-product.svg'; }}
                   />
                 </button>
               ))}
@@ -225,9 +239,13 @@ export default function ProductDetail({ product, related }: Props) {
             </div>
           )}
 
-          <Button onClick={handleAdd} size="lg" className="w-full">
-            Adicionar ao Carrinho
-          </Button>
+          <button
+            onClick={handleAdd}
+            className={`w-full px-8 py-4 text-[13px] font-bold tracking-[0.04em] uppercase rounded-full transition-all duration-200 flex items-center justify-center gap-2 ${added ? 'bg-emerald-500 text-white border border-emerald-500' : 'bg-lumara-warm-black text-lumara-offwhite border border-lumara-warm-black hover:bg-lumara-accent-dark hover:border-lumara-accent-dark'}`}
+            style={{ fontFamily: 'var(--font-nunito)' }}
+          >
+            {added ? <><Check size={15} strokeWidth={2.5} /> Adicionado ao Carrinho</> : <><ShoppingBag size={15} strokeWidth={1.8} /> Adicionar ao Carrinho</>}
+          </button>
 
           <div className="pt-2 border-t border-lumara-border">
             <p

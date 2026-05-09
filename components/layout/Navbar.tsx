@@ -51,7 +51,7 @@ export default function Navbar() {
   const [drawer, setDrawer] = useState<Drawer>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const count = useCartStore((s) => s.count);
+  const cartCount = useCartStore((s) => s.items.reduce((sum, i) => sum + i.quantity, 0));
   const likesCount = useLikesStore((s) => s.likes.length);
   useEffect(() => {
     setMounted(true);
@@ -121,11 +121,20 @@ export default function Navbar() {
                 </span>
               )}
             </button>
-            <button onClick={() => setDrawer('cart')} aria-label={`Carrinho — ${mounted ? count() : 0} itens`} className="relative flex items-center gap-1.5 text-lumara-warm-black hover:text-lumara-accent-dark transition-colors">
+            <button onClick={() => setDrawer('cart')} aria-label={`Carrinho — ${mounted ? cartCount : 0} itens`} className="relative flex items-center gap-1.5 text-lumara-warm-black hover:text-lumara-accent-dark transition-colors">
               <ShoppingBag size={22} strokeWidth={1.6} />
-              <span className="bg-lumara-gold text-white text-[11px] font-bold w-[18px] h-[18px] rounded-full flex items-center justify-center" style={{ fontFamily: 'var(--font-nunito)' }}>
-                {mounted ? count() : 0}
-              </span>
+              {mounted && cartCount > 0 && (
+                <motion.span
+                  key={cartCount}
+                  initial={{ scale: 1 }}
+                  animate={{ scale: [1, 1.45, 1] }}
+                  transition={{ duration: 0.35, ease: 'easeOut' }}
+                  className="absolute -top-1 -right-1.5 bg-lumara-gold text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center"
+                  style={{ fontFamily: 'var(--font-nunito)' }}
+                >
+                  {cartCount}
+                </motion.span>
+              )}
             </button>
           </div>
         </div>

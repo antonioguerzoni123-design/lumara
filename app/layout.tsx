@@ -18,6 +18,12 @@ const dmSans = DM_Sans({
 export const metadata: Metadata = {
   title: "Lumara — Beleza que simplifica. Cuidado que transforma.",
   description: "Equipamentos profissionais, cuidados capilares e skin care — escolhidos com intenção, pensados para o seu ritual diário.",
+  icons: {
+    icon: [
+      { url: '/icon.svg', type: 'image/svg+xml' },
+      { url: '/icon.png', sizes: '32x32', type: 'image/png' },
+    ],
+  },
 };
 
 export default function RootLayout({

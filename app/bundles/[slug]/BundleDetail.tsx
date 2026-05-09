@@ -8,32 +8,64 @@ import { Bundle } from '@/data/bundles';
 import { useCartStore } from '@/lib/cart';
 import type { Product } from '@/lib/products';
 
+export type ShopifyBundleProduct = {
+  id: string;
+  name: string;
+  price: number;
+  images: string[];
+  variants: string[] | null;
+  _shopifyVariantIds: Record<string, string>;
+  _shopifyVariantPrices: Record<string, number>;
+  _defaultVariantId: string | null;
+};
+
 type Props = {
   bundle: Bundle;
   products: Product[];
+  bundleProduct: ShopifyBundleProduct | null;
 };
 
-export default function BundleDetail({ bundle, products }: Props) {
+export default function BundleDetail({ bundle, products, bundleProduct }: Props) {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [added, setAdded] = useState(false);
+  const [selectedVariant, setSelectedVariant] = useState<string | null>(
+    bundle.defaultVariant ?? bundleProduct?.variants?.[0] ?? null
+  );
   const addItem = useCartStore((s) => s.addItem);
 
   const fmt = (n: number) => n.toFixed(2).replace('.', ',');
 
-  const handleAddAll = () => {
-    products.forEach((product) => {
+  const handleAddBundle = () => {
+    if (bundleProduct) {
+      const variantId = selectedVariant
+        ? (bundleProduct._shopifyVariantIds[selectedVariant] ?? bundleProduct._defaultVariantId)
+        : bundleProduct._defaultVariantId;
       addItem({
-        id: product.id,
-        slug: product.slug,
-        name: product.name,
-        price: product.price,
-        image: product.images[0] ?? '',
-        shopifyVariantId: product._defaultVariantId ?? undefined,
+        id: bundleProduct.id as unknown as number,
+        slug: bundle.id,
+        name: bundle.name,
+        price: bundle.bundlePrice,
+        image: bundleProduct.images[0] ?? bundle.image,
+        variant: selectedVariant ?? undefined,
+        shopifyVariantId: variantId ?? undefined,
       });
-    });
+    } else {
+      products.forEach((product) => {
+        addItem({
+          id: product.id,
+          slug: product.slug,
+          name: product.name,
+          price: product.price,
+          image: product.images[0] ?? '',
+          shopifyVariantId: product._defaultVariantId ?? undefined,
+        });
+      });
+    }
     setAdded(true);
     setTimeout(() => setAdded(false), 2500);
   };
+
+  const hasVariants = bundleProduct?.variants && bundleProduct.variants.length > 1;
 
   return (
     <div className="bg-lumara-offwhite min-h-screen">
@@ -51,9 +83,10 @@ export default function BundleDetail({ bundle, products }: Props) {
               className="w-full lg:w-[52%] rounded-2xl overflow-hidden flex-shrink-0"
             >
               <img
-                src={bundle.image}
+                src={bundleProduct?.images[0] ?? bundle.image}
                 alt={bundle.name}
                 className="w-full h-auto object-cover"
+                onError={(e) => { (e.target as HTMLImageElement).src = '/placeholder-product.svg'; }}
               />
             </motion.div>
 
@@ -134,9 +167,30 @@ export default function BundleDetail({ bundle, products }: Props) {
                 Poupas €{fmt(bundle.savings)} comprando este bundle · Envio gratuito acima de €40
               </p>
 
+              {hasVariants && (
+                <div className="mb-5">
+                  <p className="text-[11px] tracking-[0.12em] uppercase mb-2.5" style={{ color: bundle.accent, fontFamily: 'var(--font-dm-sans)' }}>
+                    {selectedVariant ? `Selecionado: ${selectedVariant}` : 'Escolhe uma opção'}
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {bundleProduct!.variants!.map((v) => (
+                      <button
+                        key={v}
+                        onClick={() => setSelectedVariant(v)}
+                        className={`px-4 py-2 text-xs rounded-full border transition-colors font-semibold ${selectedVariant === v ? 'border-lumara-warm-black bg-lumara-warm-black text-lumara-offwhite' : 'border-lumara-border text-lumara-warm-black hover:border-lumara-warm-black hover:bg-lumara-bg2'}`}
+                        style={{ fontFamily: 'var(--font-nunito)' }}
+                      >
+                        {v}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               <button
-                onClick={handleAddAll}
-                className="w-full py-4 rounded-full text-white font-bold text-[15px] transition-all duration-200 hover:opacity-90 hover:-translate-y-px active:scale-[0.98] mb-3"
+                onClick={handleAddBundle}
+                disabled={hasVariants ? !selectedVariant : false}
+                className="w-full py-4 rounded-full text-white font-bold text-[15px] transition-all duration-200 hover:opacity-90 hover:-translate-y-px active:scale-[0.98] mb-3 disabled:opacity-50 disabled:cursor-not-allowed"
                 style={{ background: bundle.accent, fontFamily: 'var(--font-nunito)' }}
               >
                 {added ? '✓ Adicionado ao carrinho' : `Adicionar Bundle ao Carrinho — €${fmt(bundle.bundlePrice)}`}
@@ -213,7 +267,9 @@ export default function BundleDetail({ bundle, products }: Props) {
                       <img
                         src={product.images[0]}
                         alt={item.name}
+                        loading="lazy"
                         className="w-full h-full object-cover"
+                        onError={(e) => { (e.target as HTMLImageElement).src = '/placeholder-product.svg'; }}
                       />
                     </div>
                   )}
@@ -527,7 +583,7 @@ export default function BundleDetail({ bundle, products }: Props) {
             €{fmt(bundle.bundlePrice)} · Poupas €{fmt(bundle.savings)} · Envio rastreado
           </p>
           <button
-            onClick={handleAddAll}
+            onClick={handleAddBundle}
             className="px-10 py-4 rounded-full text-white font-bold text-[15px] transition-all duration-200 hover:opacity-90 hover:-translate-y-px"
             style={{ background: bundle.accent, fontFamily: 'var(--font-nunito)' }}
           >

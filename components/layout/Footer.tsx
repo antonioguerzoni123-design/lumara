@@ -9,7 +9,7 @@ const footerLinks = {
   ],
   Apoio: [
     { href: '/faq', label: 'Perguntas frequentes' },
-    { href: '/contacto', label: 'Contacto' },
+    { href: '/apoio', label: 'Contacto' },
   ],
   Lumara: [
     { href: '/sobre-nos', label: 'A nossa filosofia' },

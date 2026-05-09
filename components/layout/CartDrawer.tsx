@@ -150,7 +150,9 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                         <img
                           src={driveImage(item.image)}
                           alt={item.name}
+                          loading="lazy"
                           className="w-full h-full object-cover"
+                          onError={(e) => { (e.target as HTMLImageElement).src = '/placeholder-product.svg'; }}
                         />
                       </div>
                       <div className="min-w-0">
