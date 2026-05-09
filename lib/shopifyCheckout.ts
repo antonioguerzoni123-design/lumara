@@ -1,4 +1,5 @@
 import type { CartLineInput, ValidatedLine, ShopifyAddress, ShopifyOrderInput } from './types/checkout';
+import { ValidatedLinesSchema } from './types/checkout';
 import { prisma } from './prisma';
 import { stripe } from './stripe';
 
@@ -270,7 +271,7 @@ export async function retryCreateShopifyOrder(checkoutSessionId: string): Promis
     phone: customerDetails?.phone ?? undefined,
   };
 
-  const lines = session.lineItemsSnapshot as ValidatedLine[];
+  const lines = ValidatedLinesSchema.parse(session.lineItemsSnapshot);
   const shippingPrice = (stripeSession.total_details?.amount_shipping ?? session.shippingAmount) / 100;
   const amountTotal = (stripeSession.amount_total ?? session.amountTotal ?? 0) / 100;
 

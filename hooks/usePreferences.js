@@ -11,23 +11,20 @@ const DEFAULTS = {
 
 export function usePreferences() {
   const { customer } = useCustomer();
-  const [preferences, setPreferences] = useState(DEFAULTS);
-  const [loading, setLoading] = useState(true);
+  // null = ainda não carregado; DEFAULTS shape quando carregado
+  const [preferences, setPreferences] = useState(null);
 
   useEffect(() => {
-    if (!customer?.id) { setLoading(false); return; }
+    if (!customer?.id) return;
     fetch('/api/preferences')
       .then((r) => r.ok ? r.json() : {})
-      .then((data) => {
-        setPreferences({ ...DEFAULTS, ...data });
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
+      .then((data) => setPreferences({ ...DEFAULTS, ...data }))
+      .catch(() => setPreferences(DEFAULTS));
   }, [customer]);
 
   const save = useCallback(async (updates) => {
     if (!customer?.id) return;
-    const merged = { ...preferences, ...updates };
+    const merged = { ...DEFAULTS, ...(preferences ?? {}), ...updates };
     setPreferences(merged);
     await fetch('/api/preferences', {
       method: 'POST',
@@ -36,5 +33,8 @@ export function usePreferences() {
     });
   }, [preferences, customer]);
 
-  return { preferences, save, loading };
+  // loading derivado: true só quando há customer mas dados ainda não chegaram
+  const loading = Boolean(customer?.id) && preferences === null;
+
+  return { preferences: preferences ?? DEFAULTS, loading, save };
 }

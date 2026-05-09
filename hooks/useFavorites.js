@@ -1,15 +1,11 @@
 'use client';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { getFavorites, addFavorite, removeFavorite } from '@/lib/favorites';
 import { useCustomer } from './useCustomer';
 
 export function useFavorites() {
   const { customer } = useCustomer();
-  const [favorites, setFavorites] = useState([]);
-
-  useEffect(() => {
-    setFavorites(getFavorites());
-  }, []);
+  const [favorites, setFavorites] = useState(() => getFavorites());
 
   const toggle = useCallback((product) => {
     const isFav = favorites.some((f) => f.id === product.id);
