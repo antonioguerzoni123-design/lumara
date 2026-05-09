@@ -1,36 +1,78 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Lumara
 
-## Getting Started
+Loja online de beleza feminina para Portugal.  
+Construída em Next.js 16 com App Router, TypeScript, Tailwind CSS, Shopify, Stripe e Clerk.
 
-First, run the development server:
+## Stack
+
+| Tecnologia | Uso |
+|-----------|-----|
+| Next.js 16 | Framework (App Router) |
+| TypeScript | Linguagem |
+| Tailwind CSS 4 | Estilos |
+| Shopify | Catálogo de produtos |
+| Stripe | Pagamentos |
+| Clerk | Autenticação |
+| PostgreSQL + Prisma | Base de dados |
+| Zustand | Estado global |
+| Resend | Email transacional |
+| Vercel | Deploy |
+
+## Instalar e Correr
 
 ```bash
+# Instalar dependências
+npm install
+
+# Copiar variáveis de ambiente
+cp .env.example .env.local
+# Editar .env.local com os valores corretos
+
+# Correr em desenvolvimento
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Abrir [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Scripts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run dev       # Desenvolvimento
+npm run build     # Build de produção (inclui prisma generate + migrate)
+npm run start     # Produção
+npm run lint      # Verificar código
+```
 
-## Learn More
+## Estrutura de Pastas
 
-To learn more about Next.js, take a look at the following resources:
+```
+├── app/            Rotas Next.js (páginas, layouts, API handlers)
+├── components/     Componentes React reutilizáveis
+├── lib/            Integrações e helpers (Shopify, Stripe, Prisma)
+├── hooks/          React hooks personalizados
+├── store/          Estado global (Zustand)
+├── types/          Tipos TypeScript globais
+├── config/         Configurações estáticas
+├── content/        Textos e copywriting
+├── data/           Dados estáticos (bundles, preferências)
+├── prisma/         Schema e migrações da base de dados
+├── public/         Assets públicos
+├── scripts/        Scripts utilitários
+├── tests/          Testes
+├── docs/           Documentação
+└── .agents/        Instruções para agentes de IA
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Variáveis de Ambiente
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Ver [docs/ENVIRONMENT_VARIABLES.md](docs/ENVIRONMENT_VARIABLES.md) para a lista completa.  
+Nunca commitar `.env.local`.
 
-## Deploy on Vercel
+## Documentação
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Ver pasta [docs/](docs/) para documentação técnica e de produto.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Para Agentes de IA
+
+Ver [AGENTS.md](AGENTS.md) para instruções e regras de comportamento.  
+Ver [.agents/](.agents/) para skills e workflows disponíveis.
