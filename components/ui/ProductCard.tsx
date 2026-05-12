@@ -129,7 +129,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         <button
           onClick={handleAdd}
           aria-label={`Adicionar ${product.name} ao carrinho`}
-          className={`absolute left-3 right-3 bottom-3 py-3 rounded-full text-[13px] font-bold flex items-center justify-center gap-1.5 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-[250ms] ease-out ${added ? 'bg-emerald-500 text-white' : 'bg-lumara-warm-black text-lumara-offwhite'}`}
+          className={`hidden lg:flex absolute left-3 right-3 bottom-3 py-3 rounded-full text-[13px] font-bold items-center justify-center gap-1.5 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-[250ms] ease-out ${added ? 'bg-emerald-500 text-white' : 'bg-lumara-warm-black text-lumara-offwhite'}`}
           style={{ fontFamily: 'var(--font-nunito)' }}
         >
           {added ? <><Check size={13} strokeWidth={2.5} /> Adicionado</> : '+ Adicionar ao carrinho'}

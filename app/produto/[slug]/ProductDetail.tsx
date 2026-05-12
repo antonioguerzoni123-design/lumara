@@ -1,8 +1,9 @@
 'use client';
 
 import { useState, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Check, ChevronDown, Star, ShoppingBag } from 'lucide-react';
+import { ArrowLeft, Check, ChevronDown, Star, ShoppingBag, Truck, ShieldCheck, RotateCcw } from 'lucide-react';
 import { Product, driveImage } from '@/lib/products';
 import { useCartStore } from '@/lib/cart';
 import StatBar from '@/components/ui/StatBar';
@@ -43,6 +44,7 @@ type Props = {
 };
 
 export default function ProductDetail({ product, related }: Props) {
+  const router = useRouter();
   const [activeImage, setActiveImage] = useState(0);
   const [mainImgLoaded, setMainImgLoaded] = useState(false);
   const mainImgRef = useCallback((el: HTMLImageElement | null) => {
@@ -85,47 +87,91 @@ export default function ProductDetail({ product, related }: Props) {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-6 lg:px-10">
-      <div className="py-16 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
-        <div className="space-y-4">
-          <div className="relative aspect-square bg-lumara-nude-light overflow-hidden">
-            {!mainImgLoaded && (
-              <div className="absolute inset-0 bg-lumara-bg2 animate-pulse" />
-            )}
-            <img
-              ref={mainImgRef}
-              src={driveImage(product.images[activeImage])}
-              alt={`${product.name} — imagem ${activeImage + 1}`}
-              className={`w-full h-full object-cover transition-opacity duration-300 ${mainImgLoaded ? 'opacity-100' : 'opacity-0'}`}
-              onLoad={() => setMainImgLoaded(true)}
-              onError={(e) => { (e.target as HTMLImageElement).src = '/placeholder-product.svg'; setMainImgLoaded(true); }}
-            />
-          </div>
-          {product.images.length > 1 && (
-            <div className="flex gap-3 overflow-x-auto pb-1">
+    <div className="max-w-7xl mx-auto px-5 lg:px-10">
+      <div className="pt-4 lg:pt-6">
+        <button
+          onClick={() => router.back()}
+          aria-label="Voltar à página anterior"
+          className="inline-flex items-center justify-center w-10 h-10 rounded-full border border-lumara-border bg-white hover:border-lumara-warm-black hover:bg-lumara-bg2 transition-colors text-lumara-warm-black"
+        >
+          <ArrowLeft size={18} strokeWidth={1.8} />
+        </button>
+      </div>
+      <div className="py-6 lg:py-10 grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-20">
+        <div className="space-y-3 lg:space-y-4">
+          {/* Mobile: swipe carousel com peek + dots */}
+          <div className="lg:hidden">
+            <div
+              className="
+                flex overflow-x-auto snap-x snap-mandatory scroll-smooth
+                gap-2 -mx-5 px-5 pb-1
+                [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]
+              "
+            >
               {product.images.map((imgId, i) => (
-                <button
+                <div
                   key={imgId}
-                  onClick={() => { setActiveImage(i); setMainImgLoaded(false); }}
-                  className={`shrink-0 w-16 h-20 overflow-hidden border-b-2 transition-colors ${
-                    activeImage === i ? 'border-lumara-gold' : 'border-transparent'
-                  }`}
-                  aria-label={`Ver imagem ${i + 1} de ${product.name}`}
+                  className="snap-center flex-shrink-0 w-[88vw] aspect-square bg-lumara-nude-light rounded-lg overflow-hidden"
                 >
                   <img
                     src={driveImage(imgId)}
-                    alt={`${product.name} miniatura ${i + 1}`}
-                    loading="lazy"
+                    alt={`${product.name} — imagem ${i + 1}`}
                     className="w-full h-full object-cover"
                     onError={(e) => { (e.target as HTMLImageElement).src = '/placeholder-product.svg'; }}
                   />
-                </button>
+                </div>
               ))}
             </div>
-          )}
+            {product.images.length > 1 && (
+              <div className="flex justify-center gap-1.5 mt-3" aria-hidden="true">
+                {product.images.map((_, i) => (
+                  <span key={i} className="w-1.5 h-1.5 rounded-full bg-lumara-pink-mid" />
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Desktop: main image + thumbnails */}
+          <div className="hidden lg:block space-y-4">
+            <div className="relative aspect-square bg-lumara-nude-light overflow-hidden">
+              {!mainImgLoaded && (
+                <div className="absolute inset-0 bg-lumara-bg2 animate-pulse" />
+              )}
+              <img
+                ref={mainImgRef}
+                src={driveImage(product.images[activeImage])}
+                alt={`${product.name} — imagem ${activeImage + 1}`}
+                className={`w-full h-full object-cover transition-opacity duration-300 ${mainImgLoaded ? 'opacity-100' : 'opacity-0'}`}
+                onLoad={() => setMainImgLoaded(true)}
+                onError={(e) => { (e.target as HTMLImageElement).src = '/placeholder-product.svg'; setMainImgLoaded(true); }}
+              />
+            </div>
+            {product.images.length > 1 && (
+              <div className="flex gap-3 overflow-x-auto pb-1">
+                {product.images.map((imgId, i) => (
+                  <button
+                    key={imgId}
+                    onClick={() => { setActiveImage(i); setMainImgLoaded(false); }}
+                    className={`shrink-0 w-16 h-20 overflow-hidden border-b-2 transition-colors ${
+                      activeImage === i ? 'border-lumara-gold' : 'border-transparent'
+                    }`}
+                    aria-label={`Ver imagem ${i + 1} de ${product.name}`}
+                  >
+                    <img
+                      src={driveImage(imgId)}
+                      alt={`${product.name} miniatura ${i + 1}`}
+                      loading="lazy"
+                      className="w-full h-full object-cover"
+                      onError={(e) => { (e.target as HTMLImageElement).src = '/placeholder-product.svg'; }}
+                    />
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
 
-        <div className="lg:py-4 space-y-8">
+        <div className="lg:py-4 space-y-5 lg:space-y-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -156,7 +202,7 @@ export default function ProductDetail({ product, related }: Props) {
             </p>
             <div className="flex items-baseline gap-3 flex-wrap">
               <p
-                className="text-2xl font-bold text-lumara-warm-black"
+                className="text-[28px] lg:text-2xl font-bold text-lumara-warm-black"
                 style={{ fontFamily: 'var(--font-nunito)' }}
               >
                 €{displayPrice.toFixed(2).replace('.', ',')}
@@ -218,7 +264,7 @@ export default function ProductDetail({ product, related }: Props) {
                     <button
                       key={v}
                       onClick={() => handleVariantSelect(v)}
-                      className={`px-4 py-2 text-xs rounded-full border transition-colors font-semibold ${
+                      className={`px-5 py-3 lg:px-4 lg:py-2 text-sm lg:text-xs rounded-full border transition-colors font-semibold ${
                         selectedVariant === v
                           ? 'border-lumara-warm-black bg-lumara-warm-black text-lumara-offwhite'
                           : 'border-lumara-border text-lumara-warm-black hover:border-lumara-warm-black hover:bg-lumara-bg2'
@@ -246,6 +292,18 @@ export default function ProductDetail({ product, related }: Props) {
           >
             {added ? <><Check size={15} strokeWidth={2.5} /> Adicionado ao Carrinho</> : <><ShoppingBag size={15} strokeWidth={1.8} /> Adicionar ao Carrinho</>}
           </button>
+
+          {/* Trust row sob CTA — mobile only, tom calmo */}
+          <div
+            className="lg:hidden flex items-center justify-center gap-3 text-[11px] text-lumara-gray pt-1"
+            style={{ fontFamily: 'var(--font-dm-sans)' }}
+          >
+            <span className="flex items-center gap-1"><Truck size={12} className="text-lumara-accent-dark" /> 2–10 dias</span>
+            <span aria-hidden="true">·</span>
+            <span className="flex items-center gap-1"><RotateCcw size={12} className="text-lumara-accent-dark" /> 30 dias</span>
+            <span aria-hidden="true">·</span>
+            <span className="flex items-center gap-1"><ShieldCheck size={12} className="text-lumara-accent-dark" /> Seguro</span>
+          </div>
 
           <div className="pt-2 border-t border-lumara-border">
             <p
@@ -414,7 +472,7 @@ export default function ProductDetail({ product, related }: Props) {
               Da mesma família.
             </h2>
           </motion.div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 lg:gap-8">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-6 lg:gap-8">
             {related.map((p, i) => (
               <motion.div
                 key={p.id}
