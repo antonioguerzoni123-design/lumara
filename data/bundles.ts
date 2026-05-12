@@ -44,6 +44,17 @@ export type Bundle = {
   detailsNote: string;
 };
 
+export type BundleShopifyData = {
+  productId: string;
+  defaultVariantId: string | null;
+  availableForSale: boolean;
+  price: number;
+};
+
+export type BundleWithShopify = Bundle & {
+  _shopify: BundleShopifyData | null;
+};
+
 export const bundles: Bundle[] = [
   {
     id: 'bundle-styling-completo',

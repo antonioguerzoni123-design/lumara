@@ -511,8 +511,8 @@ export const products: Product[] = [
   },
 ];
 
-export const driveImage = (path: string | undefined | null) => {
-  if (!path) return undefined;
+export const driveImage = (path: string | undefined | null): string => {
+  if (!path) return '/logo.png';
   if (path.startsWith('http://') || path.startsWith('https://') || path.startsWith('/')) return path;
   return `https://drive.google.com/uc?export=view&id=${path}`;
 };

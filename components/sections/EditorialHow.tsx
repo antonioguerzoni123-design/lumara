@@ -24,7 +24,7 @@ export default function EditorialHow() {
           transition={{ duration: 0.6 }}
         >
           <h2
-            className="text-[52px] leading-[1] tracking-[-0.03em] font-extrabold text-lumara-warm-black mb-[18px]"
+            className="text-[36px] lg:text-[52px] leading-[1] tracking-[-0.03em] font-extrabold text-lumara-warm-black mb-4 lg:mb-[18px]"
             style={{ fontFamily: 'var(--font-nunito)' }}
           >
             Bonita
@@ -47,20 +47,20 @@ export default function EditorialHow() {
             prateleira limpa: produto no centro, caminho óbvio.
           </p>
 
-          <div className="grid grid-cols-3 gap-4 mt-8">
+          <div className="grid grid-cols-3 gap-2 lg:gap-4 mt-6 lg:mt-8">
             {principles.map((p) => (
               <div
                 key={p.title}
-                className="p-[18px] bg-white/60 rounded-lg"
+                className="p-2.5 lg:p-[18px] bg-white/60 rounded-lg text-center lg:text-left"
               >
                 <h4
-                  className="text-[17px] font-bold text-lumara-warm-black mb-1"
+                  className="text-[13px] lg:text-[17px] font-bold text-lumara-warm-black mb-0.5 lg:mb-1"
                   style={{ fontFamily: 'var(--font-nunito)' }}
                 >
                   {p.title}
                 </h4>
                 <p
-                  className="text-[13px] text-lumara-gray leading-[1.45]"
+                  className="text-[11px] lg:text-[13px] text-lumara-gray leading-[1.35] lg:leading-[1.45]"
                   style={{ fontFamily: 'var(--font-dm-sans)' }}
                 >
                   {p.desc}

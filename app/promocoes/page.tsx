@@ -54,7 +54,7 @@ export default function PromocoesPage() {
       <main className="bg-lumara-offwhite">
 
         {/* Hero */}
-        <section className="bg-lumara-nude-light py-20 px-6 lg:px-10">
+        <section className="bg-lumara-nude-light py-12 px-5 lg:py-20 lg:px-10">
           <div className="max-w-[1400px] mx-auto">
             <motion.div
               initial={{ opacity: 0, y: 24 }}
@@ -70,7 +70,7 @@ export default function PromocoesPage() {
                 Promoções de abertura · Lumara Portugal
               </div>
               <h1
-                className="text-[52px] leading-[0.98] font-black tracking-[-0.03em] text-lumara-warm-black mb-5"
+                className="text-[38px] lg:text-[52px] leading-[0.98] font-black tracking-[-0.03em] text-lumara-warm-black mb-4 lg:mb-5"
                 style={{ fontFamily: 'var(--font-nunito)' }}
               >
                 Ofertas de{' '}
@@ -80,7 +80,7 @@ export default function PromocoesPage() {
                 .
               </h1>
               <p
-                className="text-[17px] text-lumara-gray max-w-[480px] leading-[1.55]"
+                className="text-[15px] lg:text-[17px] text-lumara-gray max-w-[480px] leading-[1.55]"
                 style={{ fontFamily: 'var(--font-dm-sans)' }}
               >
                 Celebramos a chegada da Lumara a Portugal com preços de lançamento
@@ -91,15 +91,15 @@ export default function PromocoesPage() {
         </section>
 
         {/* Promo pills */}
-        <section className="py-10 px-6 lg:px-10 border-b border-lumara-border">
-          <div className="max-w-[1400px] mx-auto grid grid-cols-1 md:grid-cols-3 gap-5">
+        <section className="py-6 px-5 lg:py-10 lg:px-10 border-b border-lumara-border">
+          <div className="max-w-[1400px] mx-auto grid grid-cols-1 md:grid-cols-3 gap-3 lg:gap-5">
             {promos.map((p, i) => (
               <motion.div
                 key={p.title}
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: i * 0.1 }}
-                className="flex items-start gap-4 bg-white rounded-xl p-5 border border-lumara-border"
+                className="flex items-start gap-3 lg:gap-4 bg-white rounded-xl p-4 lg:p-5 border border-lumara-border"
               >
                 <div className="w-10 h-10 rounded-full bg-lumara-nude-light flex items-center justify-center text-lumara-accent-dark flex-shrink-0">
                   {p.icon}
@@ -132,14 +132,14 @@ export default function PromocoesPage() {
         </section>
 
         {/* Bundle Deals */}
-        <section className="py-[88px] px-6 lg:px-10">
+        <section className="py-12 px-5 lg:py-[88px] lg:px-10">
           <div className="max-w-[1400px] mx-auto">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
-              className="mb-12"
+              className="mb-7 lg:mb-12"
             >
               <div
                 className="text-xs tracking-[0.14em] uppercase text-lumara-accent-dark font-semibold mb-2.5"
@@ -148,7 +148,7 @@ export default function PromocoesPage() {
                 Bundle Deals · Poupança garantida
               </div>
               <h2
-                className="text-[44px] leading-[1] tracking-[-0.03em] font-extrabold text-lumara-warm-black"
+                className="text-[32px] lg:text-[44px] leading-[1] tracking-[-0.03em] font-extrabold text-lumara-warm-black"
                 style={{ fontFamily: 'var(--font-nunito)' }}
               >
                 Juntos{' '}
@@ -165,7 +165,7 @@ export default function PromocoesPage() {
               </p>
             </motion.div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-2 gap-3 lg:gap-6">
               {bundles.map((bundle, i) => (
                 <motion.div
                   key={bundle.id}
@@ -177,7 +177,7 @@ export default function PromocoesPage() {
                   style={{ background: bundle.tone }}
                 >
                   {/* Bundle image */}
-                  <div className="relative aspect-[16/7] overflow-hidden">
+                  <div className="relative aspect-[4/5] lg:aspect-[16/7] overflow-hidden">
                     <img
                       src={bundle.image}
                       alt={bundle.name}
@@ -201,7 +201,7 @@ export default function PromocoesPage() {
                     )}
                   </div>
 
-                  <div className="p-7 lg:p-9">
+                  <div className="p-3 lg:p-9">
                     <span
                       className="text-[11px] tracking-[0.14em] uppercase font-semibold mb-2 block"
                       style={{ color: bundle.accent, fontFamily: 'var(--font-dm-sans)' }}
@@ -209,20 +209,20 @@ export default function PromocoesPage() {
                       {bundle.subtitle}
                     </span>
                     <h3
-                      className="text-[28px] font-extrabold tracking-[-0.02em] text-lumara-warm-black mb-3"
+                      className="text-[16px] lg:text-[28px] font-extrabold tracking-[-0.02em] text-lumara-warm-black mb-2 lg:mb-3 leading-[1.15]"
                       style={{ fontFamily: 'var(--font-nunito)' }}
                     >
                       {bundle.name}
                     </h3>
                     <p
-                      className="text-[14px] text-lumara-gray leading-[1.55] mb-5 max-w-[440px]"
+                      className="hidden lg:block text-[14px] text-lumara-gray leading-[1.55] mb-5 max-w-[440px]"
                       style={{ fontFamily: 'var(--font-dm-sans)' }}
                     >
                       {bundle.description}
                     </p>
 
                     {/* Items list */}
-                    <ul className="flex flex-col gap-2 mb-7">
+                    <ul className="hidden lg:flex flex-col gap-2 mb-7">
                       {bundle.items.map((item) => (
                         <li
                           key={item}
@@ -240,30 +240,30 @@ export default function PromocoesPage() {
                     </ul>
 
                     {/* Pricing */}
-                    <div className="flex items-end justify-between gap-4 flex-wrap">
+                    <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-3 lg:gap-4 lg:flex-wrap">
                       <div>
-                        <div className="flex items-baseline gap-2.5">
+                        <div className="flex items-baseline gap-1.5 lg:gap-2.5 flex-wrap">
                           <span
-                            className="text-[32px] font-black tracking-[-0.02em] text-lumara-warm-black"
+                            className="text-[20px] lg:text-[32px] font-black tracking-[-0.02em] text-lumara-warm-black"
                             style={{ fontFamily: 'var(--font-nunito)' }}
                           >
                             €{bundle.bundlePrice.toFixed(2).replace('.', ',')}
                           </span>
                           <span
-                            className="text-[16px] text-lumara-gray line-through"
+                            className="text-[12px] lg:text-[16px] text-lumara-gray line-through"
                             style={{ fontFamily: 'var(--font-nunito)' }}
                           >
                             €{bundle.originalTotal.toFixed(2).replace('.', ',')}
                           </span>
                           <span
-                            className="text-[13px] font-bold px-2.5 py-1 rounded-full text-white"
+                            className="text-[10px] lg:text-[13px] font-bold px-1.5 py-0.5 lg:px-2.5 lg:py-1 rounded-full text-white"
                             style={{ background: bundle.accent, fontFamily: 'var(--font-nunito)' }}
                           >
                             -{bundle.savingsPercent}%
                           </span>
                         </div>
                         <p
-                          className="text-xs text-lumara-gray mt-1"
+                          className="hidden lg:block text-xs text-lumara-gray mt-1"
                           style={{ fontFamily: 'var(--font-dm-sans)' }}
                         >
                           Poupas €{bundle.savings.toFixed(2).replace('.', ',')} neste bundle
@@ -272,10 +272,10 @@ export default function PromocoesPage() {
 
                       <Link
                         href={`/bundles/${bundle.id}`}
-                        className="inline-flex items-center gap-2 text-white text-[13px] font-bold px-6 py-3 rounded-full transition-all duration-200 hover:-translate-y-px"
+                        className="inline-flex items-center justify-center gap-1.5 text-white text-[12px] lg:text-[13px] font-bold px-3 lg:px-6 py-2 lg:py-3 rounded-full transition-all duration-200 hover:-translate-y-px w-full lg:w-auto"
                         style={{ background: bundle.accent, fontFamily: 'var(--font-nunito)' }}
                       >
-                        Ver bundle <ArrowRight size={14} />
+                        Ver bundle <ArrowRight size={12} />
                       </Link>
                     </div>
                   </div>

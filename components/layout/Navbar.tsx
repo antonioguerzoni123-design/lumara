@@ -69,13 +69,14 @@ export default function Navbar() {
   return (
     <>
       {/* Announcement bar */}
-      <div className="bg-lumara-warm-black text-lumara-offwhite text-[12px] tracking-[0.08em] uppercase py-2.5 text-center font-medium" style={{ fontFamily: 'var(--font-dm-sans)' }}>
-        ✦ Frete grátis acima de €40 · Entrega em 5-10 dias úteis · 10% off primeira compra: LUMARA10 ✦
+      <div className="bg-lumara-warm-black text-lumara-offwhite text-[10px] lg:text-[12px] tracking-[0.06em] lg:tracking-[0.08em] uppercase py-1.5 lg:py-2.5 px-4 text-center font-medium leading-tight" style={{ fontFamily: 'var(--font-dm-sans)' }}>
+        <span className="lg:hidden">✦ Frete grátis €40+ · LUMARA10 = 10% off ✦</span>
+        <span className="hidden lg:inline">✦ Frete grátis acima de €40 · Entrega em 5-10 dias úteis · 10% off primeira compra: LUMARA10 ✦</span>
       </div>
 
       {/* Nav */}
       <nav className="sticky top-0 z-30 bg-[rgba(250,248,251,0.95)] backdrop-blur-[10px] border-b border-lumara-border">
-        <div className="max-w-[1400px] mx-auto grid grid-cols-[1fr_auto_1fr] items-center px-6 lg:px-10 py-3 gap-6">
+        <div className="max-w-[1400px] mx-auto grid grid-cols-[1fr_auto_1fr] items-center px-5 lg:px-10 py-2 lg:py-3 gap-4 lg:gap-6">
 
           {/* Left links */}
           <div className="hidden lg:flex gap-6 items-center">
@@ -88,10 +89,20 @@ export default function Navbar() {
             ))}
           </div>
 
-          {/* Mobile menu trigger */}
-          <button className="lg:hidden text-lumara-warm-black" onClick={() => setMobileOpen(true)} aria-label="Abrir menu">
-            <Menu size={22} strokeWidth={1.6} />
-          </button>
+          {/* Mobile: hamburger + likes */}
+          <div className="lg:hidden flex items-center gap-1">
+            <button className="text-lumara-warm-black p-2.5" onClick={() => setMobileOpen(true)} aria-label="Abrir menu">
+              <Menu size={22} strokeWidth={1.6} />
+            </button>
+            <button aria-label={`Favoritos — ${mounted ? likesCount : 0} itens`} onClick={() => setDrawer('likes')} className="relative text-lumara-warm-black p-2.5">
+              <Heart size={20} strokeWidth={1.6} />
+              {mounted && likesCount > 0 && (
+                <span className="absolute top-1 right-1 bg-lumara-gold text-white text-[9px] font-bold w-3.5 h-3.5 rounded-full flex items-center justify-center" style={{ fontFamily: 'var(--font-nunito)' }}>
+                  {likesCount}
+                </span>
+              )}
+            </button>
+          </div>
 
           {/* Center logo */}
           <Link href="/" aria-label="Lumara — Início" className="flex items-center justify-center">
@@ -107,13 +118,13 @@ export default function Navbar() {
                 {link.label}
               </Link>
             ))}
-            <button aria-label="Pesquisar" onClick={() => setDrawer('search')} className="hidden md:block text-lumara-warm-black hover:text-lumara-accent-dark transition-colors">
+            <button aria-label="Pesquisar" onClick={() => setDrawer('search')} className="text-lumara-warm-black hover:text-lumara-accent-dark transition-colors p-2.5 lg:p-0">
               <Search size={22} strokeWidth={1.6} />
             </button>
-            <button aria-label="Conta" onClick={() => setDrawer('profile')} className="hidden md:block text-lumara-warm-black hover:text-lumara-accent-dark transition-colors">
+            <button aria-label="Conta" onClick={() => setDrawer('profile')} className="hidden lg:block text-lumara-warm-black hover:text-lumara-accent-dark transition-colors">
               <User size={22} strokeWidth={1.6} />
             </button>
-            <button aria-label={`Favoritos — ${mounted ? likesCount : 0} itens`} onClick={() => setDrawer('likes')} className="hidden md:block relative text-lumara-warm-black hover:text-lumara-accent-dark transition-colors">
+            <button aria-label={`Favoritos — ${mounted ? likesCount : 0} itens`} onClick={() => setDrawer('likes')} className="hidden lg:block relative text-lumara-warm-black hover:text-lumara-accent-dark transition-colors">
               <Heart size={22} strokeWidth={1.6} />
               {mounted && likesCount > 0 && (
                 <span className="absolute -top-1 -right-1.5 bg-lumara-gold text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center" style={{ fontFamily: 'var(--font-nunito)' }}>
@@ -121,7 +132,7 @@ export default function Navbar() {
                 </span>
               )}
             </button>
-            <button onClick={() => setDrawer('cart')} aria-label={`Carrinho — ${mounted ? cartCount : 0} itens`} className="relative flex items-center gap-1.5 text-lumara-warm-black hover:text-lumara-accent-dark transition-colors">
+            <button onClick={() => setDrawer('cart')} aria-label={`Carrinho — ${mounted ? cartCount : 0} itens`} className="relative flex items-center gap-1.5 text-lumara-warm-black hover:text-lumara-accent-dark transition-colors p-2 lg:p-0">
               <ShoppingBag size={22} strokeWidth={1.6} />
               {mounted && cartCount > 0 && (
                 <motion.span

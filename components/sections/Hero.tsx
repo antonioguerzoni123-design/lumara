@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Truck, ShieldCheck, Star } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useCustomer } from '@/hooks/useCustomer';
 
@@ -10,14 +10,15 @@ export default function Hero() {
   const firstName = customer?.firstName ?? '';
 
   return (
-    <section className="bg-lumara-offwhite py-14 lg:py-[56px]">
-      <div className="max-w-[1400px] mx-auto px-6 lg:px-10 grid grid-cols-1 lg:grid-cols-[0.9fr_1.15fr] gap-14 lg:gap-[56px] items-center">
+    <section className="bg-lumara-offwhite py-10 lg:py-[56px]">
+      <div className="max-w-[1400px] mx-auto px-6 lg:px-10 grid grid-cols-1 lg:grid-cols-[0.9fr_1.15fr] gap-10 lg:gap-[56px] items-center">
 
         {/* Copy */}
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, ease: 'easeOut' }}
+          className="text-center lg:text-left"
         >
           {/* Greeting when logged in */}
           {isLoggedIn && firstName && (
@@ -36,7 +37,7 @@ export default function Hero() {
 
           {/* Eyebrow */}
           <div
-            className="flex items-center gap-2.5 text-lumara-accent-dark text-xs tracking-[0.14em] uppercase font-semibold mb-5"
+            className="hidden lg:flex items-center gap-2.5 text-lumara-accent-dark text-xs tracking-[0.14em] uppercase font-semibold mb-5"
             style={{ fontFamily: 'var(--font-dm-sans)' }}
           >
             <span className="w-7 h-px bg-lumara-accent-dark block" />
@@ -45,7 +46,7 @@ export default function Hero() {
 
           {/* Title */}
           <h1
-            className="leading-[0.98] font-black tracking-[-0.02em] mb-6 text-lumara-warm-black"
+            className="leading-[0.98] font-black tracking-[-0.02em] mb-4 lg:mb-6 text-lumara-warm-black"
             style={{
               fontFamily: 'var(--font-nunito)',
               fontSize: 'clamp(44px, 5.5vw, 76px)',
@@ -64,7 +65,7 @@ export default function Hero() {
 
           {/* Sub */}
           <p
-            className="text-[17px] leading-[1.55] text-lumara-gray max-w-[440px] mb-5"
+            className="text-[15px] lg:text-[17px] leading-[1.55] text-lumara-gray max-w-[440px] mx-auto lg:mx-0 mb-5"
             style={{ fontFamily: 'var(--font-dm-sans)' }}
           >
             A primeira loja de beleza curada para Portugal. Equipamentos profissionais,
@@ -73,7 +74,7 @@ export default function Hero() {
 
           {/* First purchase discount banner */}
           <div
-            className="inline-flex items-center gap-2.5 bg-lumara-nude-light border border-lumara-gold/30 rounded-full px-4 py-2 mb-7"
+            className="hidden lg:inline-flex items-center gap-2.5 bg-lumara-nude-light border border-lumara-gold/30 rounded-full px-4 py-2 mb-7"
             style={{ fontFamily: 'var(--font-dm-sans)' }}
           >
             <span className="w-2 h-2 rounded-full bg-lumara-gold block flex-shrink-0" />
@@ -84,25 +85,43 @@ export default function Hero() {
           </div>
 
           {/* CTAs */}
-          <div className="flex flex-wrap gap-3.5 mb-14">
+          <div className="flex flex-col lg:flex-row lg:flex-wrap gap-3 lg:gap-3.5 mb-6 lg:mb-14">
             <Link
               href="/loja"
-              className="inline-flex items-center gap-2 bg-lumara-gold text-white px-7 py-3.5 rounded-full text-sm font-extrabold tracking-[0.02em] transition-all duration-200 hover:bg-lumara-accent-dark hover:-translate-y-px"
+              className="inline-flex items-center justify-center gap-2 bg-lumara-gold text-white px-7 py-3.5 rounded-full text-sm font-extrabold tracking-[0.02em] transition-all duration-200 hover:bg-lumara-accent-dark hover:-translate-y-px w-full lg:w-auto"
               style={{ fontFamily: 'var(--font-nunito)' }}
             >
               Explorar coleção <ArrowRight size={16} />
             </Link>
             <Link
               href="/sobre-nos"
-              className="inline-flex items-center bg-transparent text-lumara-warm-black border-[1.5px] border-lumara-warm-black px-7 py-3.5 rounded-full text-sm font-bold transition-all duration-200 hover:bg-lumara-warm-black hover:text-lumara-offwhite"
+              className="hidden lg:inline-flex items-center bg-transparent text-lumara-warm-black border-[1.5px] border-lumara-warm-black px-7 py-3.5 rounded-full text-sm font-bold transition-all duration-200 hover:bg-lumara-warm-black hover:text-lumara-offwhite"
               style={{ fontFamily: 'var(--font-nunito)' }}
             >
               Nossa filosofia
             </Link>
           </div>
 
+          {/* Mobile trust row — premium, calma, não promocional */}
+          <div
+            className="lg:hidden flex items-center justify-center gap-3 text-[12px] text-lumara-gray mb-6"
+            style={{ fontFamily: 'var(--font-dm-sans)' }}
+          >
+            <span className="flex items-center gap-1.5">
+              <Truck size={14} className="text-lumara-accent-dark" /> Envio rápido
+            </span>
+            <span aria-hidden="true">·</span>
+            <span className="flex items-center gap-1.5">
+              <ShieldCheck size={14} className="text-lumara-accent-dark" /> Pagamentos seguros
+            </span>
+            <span aria-hidden="true">·</span>
+            <span className="flex items-center gap-1">
+              4.8 <Star size={12} fill="#E0689F" stroke="#E0689F" />
+            </span>
+          </div>
+
           {/* Meta stats */}
-          <div className="flex gap-10 pt-7 border-t border-lumara-border">
+          <div className="hidden lg:flex gap-10 pt-7 border-t border-lumara-border">
             {[
               { num: '14', lbl: 'produtos curados' },
               { num: 'Exclusivo', lbl: 'para Portugal' },
@@ -131,7 +150,7 @@ export default function Hero() {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.15, ease: 'easeOut' }}
-          className="hidden lg:block"
+          className="w-full max-w-[360px] mx-auto lg:max-w-none lg:mx-0"
         >
           <Link
             href="/produto/lumaglide-pro"

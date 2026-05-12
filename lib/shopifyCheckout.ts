@@ -117,6 +117,13 @@ export async function validateCartItems(lines: CartLineInput[]): Promise<Validat
 
     if (!variant.availableForSale) {
       const code = variant.currentlyNotInStock ? 'OUT_OF_STOCK' : 'UNAVAILABLE';
+      console.error('[checkout] variant unavailable', {
+        shopifyVariantId: line.shopifyVariantId,
+        productTitle: variant.product.title,
+        variantTitle: variant.title,
+        currentlyNotInStock: variant.currentlyNotInStock,
+        code,
+      });
       throw Object.assign(
         new Error(`"${variant.product.title}" não está disponível para venda.`),
         { code }

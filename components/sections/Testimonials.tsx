@@ -80,7 +80,13 @@ export default function Testimonials() {
           </h2>
         </motion.div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div className="
+          flex overflow-x-auto snap-x snap-mandatory scroll-smooth gap-4 pb-1
+          -mx-6 px-6 lg:mx-0 lg:px-0
+          [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]
+          sm:grid sm:grid-cols-2 sm:overflow-visible sm:gap-5 sm:px-0 sm:mx-0
+          lg:grid-cols-4
+        ">
           {testimonials.map((t, i) => (
             <motion.div
               key={t.name}
@@ -88,7 +94,7 @@ export default function Testimonials() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.4, delay: i * 0.08 }}
-              className="bg-white rounded-xl p-6 flex flex-col gap-4 border border-lumara-border"
+              className="snap-start flex-shrink-0 w-[82vw] max-w-[340px] sm:w-auto sm:max-w-none bg-white rounded-2xl p-5 lg:p-6 flex flex-col gap-4 border border-lumara-border"
             >
               <Stars count={t.rating} />
               <p

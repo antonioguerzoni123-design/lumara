@@ -12,6 +12,8 @@ export type CartItem = {
   quantity: number;
   variant?: string;
   shopifyVariantId?: string;
+  isBundle?: boolean;
+  bundleId?: string;
 };
 
 type CartStore = {

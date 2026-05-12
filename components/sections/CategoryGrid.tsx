@@ -36,7 +36,7 @@ const categories = [
 
 export default function CategoryGrid() {
   return (
-    <section className="py-[88px] bg-lumara-offwhite">
+    <section className="py-12 lg:py-[88px] bg-lumara-offwhite">
       <div className="max-w-[1400px] mx-auto px-6 lg:px-10">
 
         {/* Header */}
@@ -45,11 +45,11 @@ export default function CategoryGrid() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="flex items-end justify-between mb-10 gap-10"
+          className="flex items-end justify-between mb-6 lg:mb-10 gap-10"
         >
           <div>
             <h2
-              className="text-[44px] leading-[1] tracking-[-0.03em] font-extrabold text-lumara-warm-black"
+              className="text-[32px] lg:text-[44px] leading-[1] tracking-[-0.03em] font-extrabold text-lumara-warm-black"
               style={{ fontFamily: 'var(--font-nunito)' }}
             >
               Três{' '}
@@ -68,7 +68,7 @@ export default function CategoryGrid() {
         </motion.div>
 
         {/* Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 lg:gap-5">
           {categories.map((cat, i) => (
             <motion.div
               key={cat.num}
@@ -93,7 +93,7 @@ export default function CategoryGrid() {
                 <div className="absolute inset-0 bg-gradient-to-t from-lumara-warm-black/80 via-lumara-warm-black/20 to-transparent" />
 
                 {/* Content */}
-                <div className="relative px-6 pb-7 pt-4">
+                <div className="relative px-5 pb-5 pt-3 lg:px-6 lg:pb-7 lg:pt-4">
                   <span
                     className="text-[11px] tracking-[0.14em] uppercase text-white/60 font-medium block mb-1.5"
                     style={{ fontFamily: 'var(--font-dm-sans)' }}
@@ -101,7 +101,7 @@ export default function CategoryGrid() {
                     {cat.num}
                   </span>
                   <h3
-                    className="text-[28px] leading-[1.02] font-bold tracking-[-0.02em] text-white mb-1.5 whitespace-pre-line"
+                    className="text-[24px] lg:text-[28px] leading-[1.02] font-bold tracking-[-0.02em] text-white mb-1.5 whitespace-pre-line"
                     style={{ fontFamily: 'var(--font-nunito)' }}
                   >
                     {cat.name}

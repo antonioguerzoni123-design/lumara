@@ -15,10 +15,30 @@ export default function SearchDrawer({ open, onClose }: Props) {
 
   useEffect(() => { if (!open) setQ(''); }, [open]);
 
-  const results = q.trim()
-    ? products.filter((p) =>
-        [p.name, p.hook, p.category].join(' ').toLowerCase().includes(q.toLowerCase())
-      )
+  const tokens = q.trim().toLowerCase().split(/\s+/).filter(Boolean);
+  const results = tokens.length
+    ? products.filter((p) => {
+        const synonyms =
+          p.category === 'cabelo'
+            ? 'alisador alisadora secador escova prancha placa cabelo styling'
+            : p.category === 'skincare'
+            ? 'pele rosto skincare máscara mascara sérum serum essência essencia'
+            : 'cuidados touca seda cetim óleo oleo capilar';
+        const haystack = [
+          p.name,
+          p.hook,
+          p.headline,
+          p.description,
+          p.category,
+          ...(p.benefits ?? []),
+          ...(p.includedItems ?? []),
+          ...(p.variants ?? []),
+          synonyms,
+        ]
+          .join(' ')
+          .toLowerCase();
+        return tokens.every((t) => haystack.includes(t));
+      })
     : [];
 
   return (

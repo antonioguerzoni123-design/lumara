@@ -13,7 +13,7 @@ type ProductCardProps = {
 
 function StarRating({ rating, count }: { rating: number; count: number }) {
   return (
-    <div className="flex items-center gap-1 mt-1">
+    <div className="flex items-center gap-1 mt-0.5 lg:mt-1">
       <div className="flex items-center gap-0.5">
         {[1, 2, 3, 4, 5].map((i) => (
           <Star
@@ -69,7 +69,7 @@ export default function ProductCard({ product }: ProductCardProps) {
   return (
     <Link href={`/produto/${product.slug}`} className="group block">
       {/* Image */}
-      <div className="relative aspect-square rounded-lg overflow-hidden bg-lumara-nude-light">
+      <div className="relative aspect-[4/5] lg:aspect-square rounded-lg overflow-hidden bg-lumara-nude-light">
         {!imgLoaded && (
           <div className="absolute inset-0 bg-lumara-bg2 animate-pulse rounded-lg" />
         )}
@@ -88,7 +88,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         {/* Discount badge */}
         {product.discount && (
           <span
-            className="absolute top-3 left-3 text-[11px] font-bold tracking-[0.04em] px-2.5 py-1.5 rounded-full bg-lumara-gold text-white"
+            className="absolute top-2 left-2 lg:top-3 lg:left-3 text-[10px] lg:text-[11px] font-bold tracking-[0.04em] px-1.5 py-0.5 lg:px-2.5 lg:py-1.5 rounded-full bg-lumara-gold text-white"
             style={{ fontFamily: 'var(--font-nunito)' }}
           >
             -{product.discount}%
@@ -98,7 +98,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         {/* Named badge (only if no discount, to avoid overlap) */}
         {product.badge && !product.discount && (
           <span
-            className={`absolute top-3 left-3 text-[11px] font-bold tracking-[0.04em] px-2.5 py-1.5 rounded-full ${
+            className={`absolute top-2 left-2 lg:top-3 lg:left-3 text-[10px] lg:text-[11px] font-bold tracking-[0.04em] px-1.5 py-0.5 lg:px-2.5 lg:py-1.5 rounded-full ${
               product.featured
                 ? 'bg-lumara-gold text-white'
                 : 'bg-white text-lumara-warm-black'
@@ -113,7 +113,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         <button
           onClick={handleLike}
           aria-label={liked ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
-          className="absolute top-3 right-3 w-[34px] h-[34px] rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center transition-opacity duration-200"
+          className="absolute top-2 right-2 lg:top-3 lg:right-3 w-7 h-7 lg:w-[34px] lg:h-[34px] rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center transition-opacity duration-200"
           style={{ opacity: liked ? 1 : undefined }}
         >
           <Heart
@@ -137,17 +137,17 @@ export default function ProductCard({ product }: ProductCardProps) {
       </div>
 
       {/* Info */}
-      <div className="pt-3.5">
+      <div className="pt-2.5 lg:pt-3.5">
         <div className="flex justify-between items-start gap-2.5">
           <div className="min-w-0 flex-1">
             <div
-              className="text-sm font-bold text-lumara-warm-black leading-[1.3] truncate"
+              className="text-[13px] lg:text-sm font-bold text-lumara-warm-black leading-[1.3] line-clamp-2 lg:truncate"
               style={{ fontFamily: 'var(--font-nunito)' }}
             >
               {product.name}
             </div>
             <div
-              className="text-[11px] text-lumara-gray mt-0.5 truncate"
+              className="text-[10px] lg:text-[11px] text-lumara-gray mt-0.5 truncate"
               style={{ fontFamily: 'var(--font-dm-sans)' }}
             >
               {product.hook}
@@ -155,14 +155,14 @@ export default function ProductCard({ product }: ProductCardProps) {
           </div>
           <div className="flex-shrink-0 text-right">
             <div
-              className="text-[15px] font-bold text-lumara-warm-black whitespace-nowrap"
+              className="text-[14px] lg:text-[15px] font-bold text-lumara-warm-black whitespace-nowrap"
               style={{ fontFamily: 'var(--font-nunito)' }}
             >
               €{product.price.toFixed(2).replace('.', ',')}
             </div>
             {product.originalPrice && (
               <div
-                className="text-[12px] text-lumara-gray line-through whitespace-nowrap"
+                className="text-[11px] lg:text-[12px] text-lumara-gray line-through whitespace-nowrap"
                 style={{ fontFamily: 'var(--font-nunito)' }}
               >
                 €{product.originalPrice.toFixed(2).replace('.', ',')}

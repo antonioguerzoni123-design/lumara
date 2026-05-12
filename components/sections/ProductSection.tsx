@@ -65,13 +65,15 @@ export default function ProductSection({
           </Link>
         </motion.div>
 
-        {/* Grid */}
+        {/* Grid (carousel on mobile, grid on sm+) */}
         <div
-          className={`grid gap-5 ${
-            cols === 5
-              ? 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-5'
-              : 'grid-cols-2 sm:grid-cols-2 lg:grid-cols-4'
-          }`}
+          className={`
+            flex overflow-x-auto snap-x snap-mandatory scroll-smooth gap-3 pb-1
+            -mx-6 px-6 lg:mx-0 lg:px-0
+            [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]
+            sm:grid sm:overflow-visible sm:gap-5 sm:px-0 sm:mx-0
+            ${cols === 5 ? 'sm:grid-cols-3 lg:grid-cols-5' : 'sm:grid-cols-2 lg:grid-cols-4'}
+          `}
         >
           {products.map((product, i) => (
             <motion.div
@@ -80,9 +82,17 @@ export default function ProductSection({
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.4, delay: i * 0.06 }}
+              className="snap-start flex-shrink-0 w-[46vw] max-w-[200px] sm:w-auto sm:max-w-none"
             >
               <ProductCard product={product} />
             </motion.div>
+          ))}
+        </div>
+
+        {/* Scroll dots indicator — apenas mobile */}
+        <div className="flex gap-1 justify-center mt-4 sm:hidden" aria-hidden="true">
+          {products.map((_, i) => (
+            <span key={i} className="w-1.5 h-1.5 rounded-full bg-lumara-pink-mid" />
           ))}
         </div>
 
