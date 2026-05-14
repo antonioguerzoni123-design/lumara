@@ -35,7 +35,7 @@ const faqs = [
     items: [
       {
         q: 'Qual é a política de devoluções?',
-        a: 'Podes devolver qualquer produto nos primeiros 30 dias após recepção, desde que esteja em condições originais com embalagem intacta. Para iniciar uma devolução, contacta-nos por email.',
+        a: 'Podes devolver qualquer produto nos primeiros 30 dias após recepção, desde que esteja em condições originais com embalagem intacta. Nota: produtos de skincare e cuidados capilares tópicos (essências, séruns, óleos, tónicos e máscaras) não são elegíveis para devolução após abertura da embalagem, por razões de higiene e segurança. Para iniciar uma devolução, contacta-nos por email.',
       },
       {
         q: 'Os produtos têm garantia?',

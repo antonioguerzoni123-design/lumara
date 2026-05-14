@@ -23,6 +23,9 @@ export type Product = {
   _shopifyVariantIds?: Record<string, string>;
   _shopifyVariantPrices?: Record<string, number>;
   _defaultVariantId?: string | null;
+  bestValueVariant?: string;
+  noReturns?: boolean;
+  featuredPromoVariant?: string;
 };
 
 export const products: Product[] = [
@@ -236,6 +239,10 @@ export const products: Product[] = [
     ],
     includedItems: ['Frasco de essência de mucina de caracol', 'Manual de utilização'],
     shopifyHandle: 'caracol-96-mucina-power-essencia-desbotamento-linhas-finas-hidratante-levantamento-endurecimento-suavizacao-nutrin-brilho-cuidados-com-a-pele',
+    defaultVariant: '100ml',
+    noReturns: true,
+    featuredPromoVariant: '3 x 100ml',
+    bestValueVariant: '3 x 100ml',
   },
   {
     id: 7,
@@ -271,6 +278,10 @@ export const products: Product[] = [
     ],
     includedItems: ['Frasco de sérum PDRN', 'Manual de utilização'],
     shopifyHandle: 'salmao-dna-pdrn-rosa-peptideo-soro-brilho-rosa-remover-escuridao-da-pele-hidratante-hidratante-endurecimento-coreano-cuidados-com-a-pele',
+    defaultVariant: '1 Sérum PDRN',
+    noReturns: true,
+    bestValueVariant: '2 Sérum PDRN',
+    featuredPromoVariant: '2 Sérum PDRN',
   },
   {
     id: 8,
@@ -304,6 +315,7 @@ export const products: Product[] = [
     ],
     includedItems: ['Frasco de tónico Milk Glow', 'Manual de utilização'],
     shopifyHandle: 'leche-brilho-toner-iluminando-a-pele-hidrata-poderosa-aliviar-a-pele-seca-e-cansada-bloqueia-em-umidade-beleza-cuidados-com-a-pele-100ml',
+    noReturns: true,
   },
   {
     id: 9,
@@ -339,6 +351,10 @@ export const products: Product[] = [
     ],
     includedItems: ['5 máscaras faciais de hidrogel Bio-Colagénio', 'Instruções de utilização'],
     shopifyHandle: 'bio-colageno-mascara-profunda-real-suplemento-colageno-hidratante-durante-a-noite-mascara-de-hidrogel-melhoria-da-elasticidade-poros-minimizando-endurecimento',
+    defaultVariant: 'Pack Semanal - 5 unidades',
+    noReturns: true,
+    bestValueVariant: 'Pack Mensal - 30 unidades',
+    featuredPromoVariant: 'Pack Mensal - 30 unidades',
   },
   {
     id: 10,
@@ -371,6 +387,7 @@ export const products: Product[] = [
     ],
     includedItems: ['Frasco de óleo de limpeza Centella', 'Manual de utilização'],
     shopifyHandle: 'centella-oleo-de-limpeza-removedor-de-maquiagem-suave-limpeza-facial-hidratante-vitamina-e-controle-de-oleo-encolher-poros-produtos-de-cuidados-com-a-pele',
+    noReturns: true,
   },
   {
     id: 11,
@@ -404,6 +421,10 @@ export const products: Product[] = [
     ],
     includedItems: ['Frasco de óleo de alecrim com conta-gotas', 'Manual de utilização'],
     shopifyHandle: 'eelhoe-oleo-essencial-de-alecrim-reparacao-cabelo-danificado-alisamento-tratamento-anti-calvicie-tratamento-do-couro-cabeludo-nutritivo-oleo-de-crescimento-do-cabelo',
+    noReturns: true,
+    defaultVariant: '60ml',
+    bestValueVariant: '120ml',
+    featuredPromoVariant: '120ml',
   },
   {
     id: 12,
@@ -471,7 +492,8 @@ export const products: Product[] = [
       '/products/touca-bege-1.png',
       '/products/touca-bege-2.png',
     ],
-    variants: ['Rosa', 'Preta', 'Bege'],
+    variants: ['Rosa', 'Preto', 'Bege'],
+    defaultVariant: 'Preto',
     includedItems: ['Touca de cetim Lumara (1 unidade)', 'Instruções de cuidado'],
     shopifyHandle: 'novo-feminino-grande-gorro-de-cetim-sedoso-noite-touca-de-dormir-com-faixa-elastica-touca-de-banho-encaracolado-tranca-cabelo-cabeca-capa-turbante',
   },
@@ -506,6 +528,9 @@ export const products: Product[] = [
       '/products/fronha-3.png',
     ],
     variants: ['51×66 cm', '51×76 cm'],
+    defaultVariant: 'Rosa / 51cmx76cm 1pc',
+    bestValueVariant: '2Pcs Rosa / 51cmx76cm 1pc',
+    featuredPromoVariant: '2Pcs Rosa / 51cmx76cm 1pc',
     includedItems: ['Fronha de seda 100% (1 unidade)', 'Instruções de lavagem e cuidado'],
     shopifyHandle: '100-fronha-de-seda-capa-de-almofada-de-cetim-de-seda-beleza-fronha-confortavel-fronha-decoracao-para-casa-capas-de-almofada',
   },

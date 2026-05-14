@@ -1,15 +1,17 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useState, Suspense } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Product } from '@/lib/products';
+import { Bundle } from '@/data/bundles';
 import ProductCard from '@/components/ui/ProductCard';
+import BundleCard from '@/components/ui/BundleCard';
 import SectionLabel from '@/components/ui/SectionLabel';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 
-type Category = Product['category'] | 'all';
+type Category = Product['category'] | 'all' | 'promocoes';
 type SortOption = 'featured' | 'price-asc' | 'price-desc';
 
 const CATEGORIES: { value: Category; label: string }[] = [
@@ -17,29 +19,52 @@ const CATEGORIES: { value: Category; label: string }[] = [
   { value: 'cabelo', label: 'Aparelhos' },
   { value: 'skincare', label: 'Skin care' },
   { value: 'cuidados', label: 'Cuidados capilares' },
+  { value: 'promocoes', label: 'Promoções' },
 ];
 
-function LojaContent({ products }: { products: Product[] }) {
+function LojaContent({ products, bundles }: { products: Product[]; bundles: Bundle[] }) {
   const searchParams = useSearchParams();
-  const paramCat = searchParams.get('categoria');
+  const router = useRouter();
 
-  const [category, setCategory] = useState<Category>(
-    (paramCat as Category) || 'all'
-  );
+  // Derivar categoria directamente do URL — garante coerência com historial do browser
+  const category: Category = (searchParams.get('categoria') as Category) || 'all';
   const [sort, setSort] = useState<SortOption>('featured');
 
-  useEffect(() => {
-    const cat = searchParams.get('categoria');
-    if (cat && cat !== 'novo') setCategory(cat as Category);
-  }, [searchParams]);
+  const setCategory = (cat: Category) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (cat === 'all') {
+      params.delete('categoria');
+    } else {
+      params.set('categoria', cat as string);
+    }
+    const qs = params.toString();
+    router.replace(`/loja${qs ? `?${qs}` : ''}`);
+  };
 
-  const filtered = products
-    .filter((p) => category === 'all' || p.category === category)
+  const filteredProducts = products
+    .filter((p) => {
+      if (category === 'all') return true;
+      if (category === 'promocoes') return false;
+      return p.category === category;
+    })
     .sort((a, b) => {
       if (sort === 'featured') return (b.featured ? 1 : 0) - (a.featured ? 1 : 0);
       if (sort === 'price-asc') return a.price - b.price;
       return b.price - a.price;
     });
+
+  // Variant deals: products with featuredPromoVariant set (non-empty)
+  const variantDeals = products.filter((p) => p.featuredPromoVariant);
+
+  const getTabCount = (cat: Category) => {
+    if (cat === 'all') return products.length + bundles.length;
+    if (cat === 'promocoes') return bundles.length + variantDeals.length;
+    return products.filter((p) => p.category === cat).length;
+  };
+
+  const isPromo = category === 'promocoes';
+  const isAll = category === 'all';
+  const isEmpty = !isPromo && filteredProducts.length === 0;
 
   return (
     <>
@@ -64,10 +89,7 @@ function LojaContent({ products }: { products: Product[] }) {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-10">
             <div className="flex flex-wrap gap-2">
               {CATEGORIES.map((cat) => {
-                const count =
-                  cat.value === 'all'
-                    ? products.length
-                    : products.filter((p) => p.category === cat.value).length;
+                const count = getTabCount(cat.value);
                 const active = category === cat.value;
                 return (
                   <button
@@ -93,20 +115,22 @@ function LojaContent({ products }: { products: Product[] }) {
               })}
             </div>
 
-            <select
-              value={sort}
-              onChange={(e) => setSort(e.target.value as SortOption)}
-              className="text-sm text-lumara-warm-black bg-lumara-bg2 border-none rounded-full px-4 py-2.5 outline-none cursor-pointer hover:bg-lumara-accent-soft transition-colors"
-              style={{ fontFamily: 'var(--font-dm-sans)' }}
-              aria-label="Ordenar produtos"
-            >
-              <option value="featured">Em Destaque</option>
-              <option value="price-asc">Preço: Menor</option>
-              <option value="price-desc">Preço: Maior</option>
-            </select>
+            {!isPromo && (
+              <select
+                value={sort}
+                onChange={(e) => setSort(e.target.value as SortOption)}
+                className="text-sm text-lumara-warm-black bg-lumara-bg2 border-none rounded-full px-4 py-2.5 outline-none cursor-pointer hover:bg-lumara-accent-soft transition-colors"
+                style={{ fontFamily: 'var(--font-dm-sans)' }}
+                aria-label="Ordenar produtos"
+              >
+                <option value="featured">Em Destaque</option>
+                <option value="price-asc">Preço: Menor</option>
+                <option value="price-desc">Preço: Maior</option>
+              </select>
+            )}
           </div>
 
-          {filtered.length === 0 ? (
+          {isEmpty ? (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -132,9 +156,72 @@ function LojaContent({ products }: { products: Product[] }) {
                 Ver todos
               </button>
             </motion.div>
+          ) : isPromo ? (
+            /* Promoções: bundles + variant deals */
+            <div className="space-y-12">
+              {/* Bundles */}
+              {bundles.length > 0 && (
+                <div>
+                  <p
+                    className="text-[11px] tracking-[0.12em] uppercase text-lumara-gray mb-6"
+                    style={{ fontFamily: 'var(--font-dm-sans)' }}
+                  >
+                    Bundles
+                  </p>
+                  <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6 lg:gap-8">
+                    {bundles.map((bundle, i) => (
+                      <motion.div
+                        key={bundle.id}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.4, delay: i * 0.04 }}
+                      >
+                        <BundleCard bundle={bundle} />
+                      </motion.div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Variant deals */}
+              {variantDeals.length > 0 && (
+                <div>
+                  <p
+                    className="text-[11px] tracking-[0.12em] uppercase text-lumara-gray mb-6"
+                    style={{ fontFamily: 'var(--font-dm-sans)' }}
+                  >
+                    Packs & Multi-unidades
+                  </p>
+                  <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6 lg:gap-8">
+                    {variantDeals.map((p, i) => {
+                      const featuredVariant = p.featuredPromoVariant!;
+                      const variantPrice = p._shopifyVariantPrices?.[featuredVariant] ?? p.price;
+                      const variantProduct: Product = {
+                        ...p,
+                        price: variantPrice,
+                        originalPrice: p.price,
+                        discount: undefined,
+                        badge: featuredVariant,
+                      };
+                      return (
+                        <motion.div
+                          key={`${p.id}-promo`}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.4, delay: (bundles.length + i) * 0.04 }}
+                        >
+                          <ProductCard product={variantProduct} />
+                        </motion.div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
           ) : (
+            /* Todos + categorias: produtos regulares + bundles no fim (apenas em 'all') */
             <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6 lg:gap-8">
-              {filtered.map((product, i) => (
+              {filteredProducts.map((product, i) => (
                 <motion.div
                   key={product.id}
                   initial={{ opacity: 0, y: 20 }}
@@ -142,6 +229,16 @@ function LojaContent({ products }: { products: Product[] }) {
                   transition={{ duration: 0.4, delay: i * 0.04 }}
                 >
                   <ProductCard product={product} />
+                </motion.div>
+              ))}
+              {isAll && bundles.map((bundle, i) => (
+                <motion.div
+                  key={bundle.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: (filteredProducts.length + i) * 0.04 }}
+                >
+                  <BundleCard bundle={bundle} />
                 </motion.div>
               ))}
             </div>
@@ -153,10 +250,10 @@ function LojaContent({ products }: { products: Product[] }) {
   );
 }
 
-export default function LojaClient({ products }: { products: Product[] }) {
+export default function LojaClient({ products, bundles }: { products: Product[]; bundles: Bundle[] }) {
   return (
     <Suspense>
-      <LojaContent products={products} />
+      <LojaContent products={products} bundles={bundles} />
     </Suspense>
   );
 }

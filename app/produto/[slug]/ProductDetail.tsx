@@ -3,7 +3,7 @@
 import { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Check, ChevronDown, Star, ShoppingBag, Truck, ShieldCheck, RotateCcw } from 'lucide-react';
+import { ArrowLeft, Check, ChevronDown, Star, ShoppingBag, Truck, ShieldCheck, RotateCcw, X } from 'lucide-react';
 import { Product, driveImage } from '@/lib/products';
 import { useCartStore } from '@/lib/cart';
 import StatBar from '@/components/ui/StatBar';
@@ -11,32 +11,36 @@ import Badge from '@/components/ui/Badge';
 import SectionLabel from '@/components/ui/SectionLabel';
 import ProductCard from '@/components/ui/ProductCard';
 
-const FAQS: { q: string; a: string }[] = [
-  {
-    q: 'Qual é a política de devoluções?',
-    a: 'Aceitamos devoluções em 30 dias após a recepção. O produto deve estar em condições originais.',
-  },
-  {
-    q: 'Quanto tempo demora o envio?',
-    a: 'Os envios para Portugal demoram 2–10 dias úteis com rastreamento incluído. Envio gratuito em encomendas iguais ou superiores a €40. Abaixo de €40, taxa de €3,99.',
-  },
-  {
-    q: 'O produto tem garantia?',
-    a: 'Todos os produtos electrónicos têm 2 anos de garantia legal. Para cosméticos, seguimos as recomendações do fabricante.',
-  },
-  {
-    q: 'Como posso rastrear a minha encomenda?',
-    a: 'Receberás um email com o número de rastreamento assim que a encomenda for expedida.',
-  },
-  {
-    q: 'Posso usar em todo o tipo de cabelo?',
-    a: 'Sim, salvo indicação contrária no produto. Recomendamos sempre ler as instruções específicas.',
-  },
-  {
-    q: 'Os produtos são testados dermatologicamente?',
-    a: 'Todos os produtos de skincare passaram por testes dermatológicos certificados.',
-  },
-];
+function buildFaqs(product: { noReturns?: boolean }): { q: string; a: string }[] {
+  return [
+    {
+      q: 'Qual é a política de devoluções?',
+      a: product.noReturns
+        ? 'Por razões de higiene e segurança, este produto não aceita devoluções após abertura da embalagem. Em caso de defeito ou dano no envio, contacta-nos com fotografias e resolvemos sem custos.'
+        : 'Aceitamos devoluções em 30 dias após a recepção. O produto deve estar em condições originais.',
+    },
+    {
+      q: 'Quanto tempo demora o envio?',
+      a: 'Os envios para Portugal demoram 2–10 dias úteis com rastreamento incluído. Envio gratuito em encomendas iguais ou superiores a €40. Abaixo de €40, taxa de €3,99.',
+    },
+    {
+      q: 'O produto tem garantia?',
+      a: 'Todos os produtos electrónicos têm 2 anos de garantia legal. Para cosméticos, seguimos as recomendações do fabricante.',
+    },
+    {
+      q: 'Como posso rastrear a minha encomenda?',
+      a: 'Receberás um email com o número de rastreamento assim que a encomenda for expedida.',
+    },
+    {
+      q: 'Posso usar em todo o tipo de cabelo?',
+      a: 'Sim, salvo indicação contrária no produto. Recomendamos sempre ler as instruções específicas.',
+    },
+    {
+      q: 'Os produtos são testados dermatologicamente?',
+      a: 'Todos os produtos de skincare passaram por testes dermatológicos certificados.',
+    },
+  ];
+}
 
 type Props = {
   product: Product;
@@ -52,6 +56,7 @@ export default function ProductDetail({ product, related }: Props) {
   }, []);
   const [selectedVariant, setSelectedVariant] = useState(product.defaultVariant ?? product.variants?.[0]);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const faqs = buildFaqs(product);
   const [added, setAdded] = useState(false);
   const addItem = useCartStore((s) => s.addItem);
 
@@ -264,7 +269,7 @@ export default function ProductDetail({ product, related }: Props) {
                     <button
                       key={v}
                       onClick={() => handleVariantSelect(v)}
-                      className={`px-5 py-3 lg:px-4 lg:py-2 text-sm lg:text-xs rounded-full border transition-colors font-semibold ${
+                      className={`relative px-5 py-3 lg:px-4 lg:py-2 text-sm lg:text-xs rounded-full border transition-colors font-semibold ${
                         selectedVariant === v
                           ? 'border-lumara-warm-black bg-lumara-warm-black text-lumara-offwhite'
                           : 'border-lumara-border text-lumara-warm-black hover:border-lumara-warm-black hover:bg-lumara-bg2'
@@ -276,6 +281,11 @@ export default function ProductDetail({ product, related }: Props) {
                       {variantPrice !== undefined && variantPrice !== product.price && (
                         <span className={`ml-1.5 text-[10px] font-normal ${selectedVariant === v ? 'opacity-70' : 'text-lumara-gray'}`}>
                           €{variantPrice.toFixed(2).replace('.', ',')}
+                        </span>
+                      )}
+                      {v === product.bestValueVariant && (
+                        <span className="absolute -top-2 -right-1 text-[8px] font-bold text-lumara-gold bg-white border border-lumara-gold px-1.5 py-0.5 rounded-full uppercase tracking-wide leading-none">
+                          Melhor oferta
                         </span>
                       )}
                     </button>
@@ -300,7 +310,10 @@ export default function ProductDetail({ product, related }: Props) {
           >
             <span className="flex items-center gap-1"><Truck size={12} className="text-lumara-accent-dark" /> 2–10 dias</span>
             <span aria-hidden="true">·</span>
-            <span className="flex items-center gap-1"><RotateCcw size={12} className="text-lumara-accent-dark" /> 30 dias</span>
+            {product.noReturns
+              ? <span className="flex items-center gap-1 text-red-400"><X size={12} /> Sem devoluções</span>
+              : <span className="flex items-center gap-1"><RotateCcw size={12} className="text-lumara-accent-dark" /> 30 dias</span>
+            }
             <span aria-hidden="true">·</span>
             <span className="flex items-center gap-1"><ShieldCheck size={12} className="text-lumara-accent-dark" /> Seguro</span>
           </div>
@@ -413,7 +426,7 @@ export default function ProductDetail({ product, related }: Props) {
             </h2>
           </motion.div>
           <div className="divide-y divide-lumara-border">
-            {FAQS.map((faq, i) => (
+            {faqs.map((faq, i) => (
               <div key={i}>
                 <button
                   onClick={() => setOpenFaq(openFaq === i ? null : i)}

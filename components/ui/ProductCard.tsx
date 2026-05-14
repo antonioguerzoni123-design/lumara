@@ -45,6 +45,11 @@ export default function ProductCard({ product }: ProductCardProps) {
   const { likes, toggleLike } = useLikesStore();
   const liked = likes.includes(product.id);
 
+  const cardPrice =
+    product.defaultVariant && product._shopifyVariantPrices?.[product.defaultVariant]
+      ? product._shopifyVariantPrices[product.defaultVariant]
+      : product.price;
+
   const handleAdd = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -52,9 +57,12 @@ export default function ProductCard({ product }: ProductCardProps) {
       id: product.id,
       slug: product.slug,
       name: product.name,
-      price: product.price,
+      price: cardPrice,
       image: product.images[0] ?? '',
-      shopifyVariantId: product._defaultVariantId ?? undefined,
+      shopifyVariantId:
+        (product.defaultVariant && product._shopifyVariantIds?.[product.defaultVariant])
+        ?? product._defaultVariantId
+        ?? undefined,
     });
     setAdded(true);
     setTimeout(() => setAdded(false), 1500);
@@ -158,7 +166,7 @@ export default function ProductCard({ product }: ProductCardProps) {
               className="text-[14px] lg:text-[15px] font-bold text-lumara-warm-black whitespace-nowrap"
               style={{ fontFamily: 'var(--font-nunito)' }}
             >
-              €{product.price.toFixed(2).replace('.', ',')}
+              €{cardPrice.toFixed(2).replace('.', ',')}
             </div>
             {product.originalPrice && (
               <div
